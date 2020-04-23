@@ -7,7 +7,7 @@
     "prebuild": "rm -rf build && mkdir build",
     "build:babel": "babel --out-dir build --ignore *.test.js src",
     "build": "npm run prebuild && npm run build:babel",
-    "start": "npm run build && node ./build/index.js",
+    "start": "babel-node ./src/index.js",
     "start:dev": "nodemon --exec babel-node ./src/index.js",
     "seed": "npx sequelize-cli db:seed:all",
     "test": "echo \"Error: no test specified\" && exit 1"
