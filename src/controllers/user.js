@@ -19,11 +19,12 @@ import cryptoRandomString from 'crypto-random-string';
  */
 export const userContoller = {
     /**
-     * This function add users to the platform
+     * This functionality allows admin to add 
+     * users to the platform
      * 
      */
    async addUser(req, res){   
-try {
+    try {
     let { fullname, email, password, branch } = req.body;
     const userObject = {email, password};
     
@@ -54,37 +55,46 @@ try {
     }
 },
 
-async loginUser(req, res){
-    try {
-    const token = createToken(req.body);
-            return res.status(200).json({
-                status: 200,
-                token
-            })
+// async loginUser(req, res){
+//     try {
+//     const token = createToken(req.body);
+//             return res.status(200).json({
+//                 status: 200,
+//                 token
+//             })
     
         
-    } catch(error){
-        return res.status(500).json({
-            status: 500,
-            error: error.message
-        });
-    }
-  },
+//     } catch(error){
+//         return res.status(500).json({
+//             status: 500,
+//             error: error.message
+//         });
+//     }
+//   },
 
-  async loginAdmin(req, res){
-      const { is_admin, email } = req.body;
+  
+/**
+  * This function allows users 
+  * to login the platform
+*/
+  async loginUser(req, res){
+      const { is_admin, email } = req.body
     try {
         if(is_admin){
             const code = cryptoRandomString({length: 6, type: 'distinguishable'});
             const emailSent = emailTemplate(email, code);
             Transporter(emailSent, res);
             redisClient.set(email, code, 'EX', 1200);
-        } else {
-            return res.status(403).json({
-                status: 403,
-                error: 'You are not authorized'
-            });
+            return;
         }
+        const userdetail = req.body;
+        delete userdetail.password;
+        const token = createToken(req.body);
+            return res.status(200).json({
+                status: 200,
+                token,
+                userdetail
+            }) 
         
     } catch(error){
         return res.status(500).json({
@@ -94,6 +104,11 @@ async loginUser(req, res){
     }
   },
   
+
+  /**
+   * This function verifies code sent to admin
+   * code expires after 20mins
+   */
   async adminVerification(req, res){
       const { email, code } = req.body;
      let token;
@@ -107,10 +122,13 @@ async loginUser(req, res){
         //if match is found
         if (result !== null) {
             if(code === result) {
+                delete data.dataValues.password;
+                const userdetail = data.dataValues;
                 token = createToken(data.dataValues);
                 return res.status(200).json({
                     status: 200,
-                    token
+                    token,
+                    userdetail
                 });
             } else {
                 return res.status(400).json({
@@ -127,7 +145,10 @@ async loginUser(req, res){
       });
   },
 
-  /** Set and get reset password link in redis for 20mins */
+  /** 
+   * Sends password reset link to users
+   * URL expires after 20mins
+   */
   async resetPassword(req, res){
     let user = await findUserByEmail(req.body.email);
 
@@ -142,7 +163,7 @@ async loginUser(req, res){
         const url = getPasswordResetURL(req, token);
         const emailSent = passwordResetEmailTemplate(user, url);
         Transporter(emailSent, res);
-        redisClient.set(user.email, url, 'EX', 1200);
+        redisClient.set(user.email, url, 'EX', 420);
     }
     catch(err){
         return res.status(500).json({
@@ -152,9 +173,11 @@ async loginUser(req, res){
     }
 },
 
-/**Get reset link from redis
- * set uri dynamically
- * */
+/**
+ * receives new password
+ * and sets it in the database
+ * 
+ */
 async receiveNewPassword(req, res){
     const { token } = req.params;
     const { password, confirmpassword } = req.body;
@@ -171,18 +194,35 @@ async receiveNewPassword(req, res){
             message: 'Ensure password has 8 characters and contains a number at least'
         });
     }
+    
 
     else {
+        const payload = jwt.verify(token, process.env.SECRETKEY);
         try {
-            const payload = jwt.verify(token, process.env.SECRETKEY);
-                let hash = hashPassword(password);
+            redisClient.get(payload.user.email, async(err, result) => {
+                if(err){
+                    return res.status(500).json({
+                        error: err.message
+                    });
+                }
+                if(result !== null){
+                    let hash = hashPassword(password);
 
-                await updatePassword(password,hash, payload.user.email);
+                    await updatePassword(password,hash, payload.user.email);
                 
-                return res.status(202).json({
-                    status: 202,
-                    message: 'Password updated successfully'
-                });
+                    return res.status(202).json({
+                        status: 202,
+                        message: 'Password updated successfully'
+                    });
+                }
+                else {
+                    return res.status(404).json({
+                        status: 404,
+                        message: 'The password reset link has expired, request another'
+                    })
+                }
+            })
+                
         } catch(err){
             return res.status(500).json({
                 status: 500,
@@ -192,15 +232,22 @@ async receiveNewPassword(req, res){
     }
 },
 
+/**
+ * admin can fetch all users
+ */
 async adminGetAllUsers(req, res) {
     try {
       const allUsers = await getAllUsers();
+        
       if (allUsers.length > 0) {
-        return res.status(200).json({
-            status: 200,
-            allUsers
-        })
-      } else {
+          for (let i = 0; i < allUsers.length; i++)  {
+            delete allUsers[i].dataValues.password;
+          }
+            return res.status(200).json({
+                status: 200,
+                allUsers
+            })
+        } else {
         return res.status(200).json({
             status: 200,
             message: 'No users currently on the platform'
@@ -214,6 +261,10 @@ async adminGetAllUsers(req, res) {
     }
   },
 
+  /**
+   * admins can change user role 
+   * 
+   */
   async adminChangeUserRole(req, res){
     if (!req.body.email || req.body.email.trim() === ''){
         return res.status(400).json({
@@ -231,7 +282,7 @@ async adminGetAllUsers(req, res) {
                   error: 'Unknown email, please check email and try again later'
               });
           }
-          else{
+          else {
               user.is_admin = !user.is_admin;
               const val = await user.save();
 
@@ -249,7 +300,10 @@ async adminGetAllUsers(req, res) {
           });
       }
   },
-
+  
+  /** 
+   * admin can delete users 
+   */
   async adminDeleteUser(req, res){
       if (!req.body.email || req.body.email.trim() === ''){
           return res.status(400).json({
@@ -281,30 +335,6 @@ async adminGetAllUsers(req, res) {
           });
       }
   }
-
-
-//   usePass(req, res){
-//       const { email } = req.body;
-//       const hash = hashPassword(email);
-
-//       const compare = comparePassword(email, hash);
-//       console.log('COMPARE', compare);
-//   },
-
-//   useToken(req){
-//       const { email } = req.body;
-//       const token = jwt.sign({ email }, 'SECRET');
-
-//       const verify = jwt.verify(token, 'SECRET');
-//       console.log('VERIFY', verify);
-//       if(verify.email === email){
-//           console.log('Oops');
-//       }
-//   }
 }
 
-/**
- * for admin invite
- * store admin filled form in
- * redis then...
- */
+

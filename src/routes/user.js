@@ -16,11 +16,11 @@ export const userRouter = express.Router();
 
 
 userRouter.post('/login', loginUserValidator,loginUser);
-userRouter.post('/forgot', verifyToken, resetPassword);
-userRouter.patch('/password/reset/:token', verifyToken, receiveNewPassword);
+userRouter.post('/forgot', resetPassword);
+userRouter.patch('/password/reset/:token', receiveNewPassword);
 
 //admin routes
-userRouter.post('/admin/login', loginUserValidator, loginAdmin);
+//userRouter.post('/admin/login', loginUserValidator, loginAdmin);
 userRouter.post('/admin/verify', adminVerification);
 userRouter.post('/register', verifyToken, verifyAdmin, addUserValidator, addUser);
 userRouter.get('/users', verifyToken, verifyAdmin, adminGetAllUsers);
