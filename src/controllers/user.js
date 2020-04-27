@@ -163,7 +163,7 @@ export const userContoller = {
         const url = getPasswordResetURL(req, token);
         const emailSent = passwordResetEmailTemplate(user, url);
         Transporter(emailSent, res);
-        redisClient.set(user.email, url, 'EX', 420);
+        redisClient.set(user.email, url, 'EX', 1200);
     }
     catch(err){
         return res.status(500).json({
