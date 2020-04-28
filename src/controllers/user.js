@@ -25,7 +25,7 @@ export const userContoller = {
      */
    async addUser(req, res){   
     try {
-    let { fullname, email, password, branch } = req.body;
+    let { fullname, email, password, branch, is_admin } = req.body;
     const userObject = {email, password};
     
     let hash = hashPassword(password);
@@ -74,7 +74,7 @@ export const userContoller = {
 
   
 /**
-  * This function allows users 
+  * This function allows all types of users 
   * to login the platform
 */
   async loginUser(req, res){
@@ -84,7 +84,7 @@ export const userContoller = {
             const code = cryptoRandomString({length: 6, type: 'distinguishable'});
             const emailSent = emailTemplate(email, code);
             Transporter(emailSent, res);
-            redisClient.set(email, code, 'EX', 1200);
+            redisClient.set(code, email, 'EX', 1200);
             return;
         }
         const userdetail = req.body;
@@ -110,18 +110,19 @@ export const userContoller = {
    * code expires after 20mins
    */
   async adminVerification(req, res){
-      const { email, code } = req.body;
+      const { code } = req.body;
      let token;
-     let data  = await findUserByEmail(email);
-      redisClient.get(email, (err, result) => {
+
+      redisClient.get(code, async(err, email) => {
         if (err) {
           return res.status(500).json({
               error: err.message
           });
         }
         //if match is found
-        if (result !== null) {
-            if(code === result) {
+        if (code !== null) {
+            if(email !== null) {
+                let data  = await findUserByEmail(email);
                 delete data.dataValues.password;
                 const userdetail = data.dataValues;
                 token = createToken(data.dataValues);
@@ -262,7 +263,7 @@ async adminGetAllUsers(req, res) {
   },
 
   /**
-   * admins can change user role 
+   * admins can update user profile 
    * 
    */
   async adminChangeUserRole(req, res){
@@ -283,13 +284,15 @@ async adminGetAllUsers(req, res) {
               });
           }
           else {
-              user.is_admin = !user.is_admin;
+              user.is_admin = req.body.is_admin || user.is_admin;
+              user.fullname = req.body.fullname || user.fullname;
+              user.branch = req.body.branch || user.branch;
               const val = await user.save();
 
               return res.status(200).json({
                   status: 200,
                   val,
-                  message: 'role change successful'
+                  message: 'profile change successful'
               })
           }
       }
