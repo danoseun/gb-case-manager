@@ -1,8 +1,9 @@
 import 'dotenv/config';
 import model from '../database/models'
+import { Op } from 'sequelize';
 import { comparePassword, hashPassword, checkPassword } from '../helpers/password';
 import { findUserByEmail, registerEmailTemplate, 
-        updatePassword, getAllUsers, getUser } from '../services/user'
+        updatePassword, getUser } from '../services/user'
 import { emailTemplate, Transporter, getPasswordResetURL, 
         passwordResetEmailTemplate, 
         useUserDetailToMakeToken } from '../helpers/email';
@@ -25,7 +26,7 @@ export const userContoller = {
      */
    async addUser(req, res){   
     try {
-    let { fullname, email, password, branch, is_admin } = req.body;
+    let { fullname, email, password, branch, role } = req.body;
     const userObject = {email, password};
     
     let hash = hashPassword(password);
@@ -78,9 +79,9 @@ export const userContoller = {
   * to login the platform
 */
   async loginUser(req, res){
-      const { is_admin, email } = req.body
+      const { role, email } = req.body
     try {
-        if(is_admin){
+        if(role === 'admin'){
             const code = cryptoRandomString({length: 6, type: 'distinguishable'});
             const emailSent = emailTemplate(email, code);
             Transporter(emailSent, res);
@@ -99,7 +100,7 @@ export const userContoller = {
     } catch(error){
         return res.status(500).json({
             status: 500,
-            error: error.message
+            error: error
         });
     }
   },
@@ -235,25 +236,34 @@ async receiveNewPassword(req, res){
 
 /**
  * admin can fetch all users
+ * pagination and search inclusive.
  */
 async adminGetAllUsers(req, res) {
-    try {
-      const allUsers = await getAllUsers();
-        
-      if (allUsers.length > 0) {
-          for (let i = 0; i < allUsers.length; i++)  {
-            delete allUsers[i].dataValues.password;
+    let { offset, limit, order, sort, ...rest } = req.query;
+    offset = offset ? parseInt(offset) : 0;
+    limit = limit ? parseInt(limit) : 10;
+    let options = {};
+
+    if (Object.keys(rest).length) {
+        for (const key in rest) {
+          if (rest.hasOwnProperty(key)) {
+            const value =
+              key === "name" ? { [Op.like]: `%${rest[key]}%` } : rest[key];
+            options[key] = value;
           }
-            return res.status(200).json({
-                status: 200,
-                allUsers
-            })
-        } else {
-        return res.status(200).json({
-            status: 200,
-            message: 'No users currently on the platform'
-        });
+        }
       }
+
+    try {
+        const data = await model.User.findAndCountAll({
+            where: options,
+            order: [[sort || "updatedAt", order || "DESC"]],
+            offset,
+            limit
+          });
+          return res
+            .status(200)
+            .json({ data: data.rows, offset, limit, total: data.count });
     } catch (error) {
       return res.status(500).json({
           status: 500,
@@ -266,7 +276,7 @@ async adminGetAllUsers(req, res) {
    * admins can update user profile 
    * 
    */
-  async adminChangeUserRole(req, res){
+  async adminUpdateUserProfile(req, res){
     if (!req.body.email || req.body.email.trim() === ''){
         return res.status(400).json({
             status: 400,
@@ -284,7 +294,7 @@ async adminGetAllUsers(req, res) {
               });
           }
           else {
-              user.is_admin = req.body.is_admin || user.is_admin;
+              user.role = req.body.role || user.role;
               user.fullname = req.body.fullname || user.fullname;
               user.branch = req.body.branch || user.branch;
               const val = await user.save();
@@ -339,5 +349,4 @@ async adminGetAllUsers(req, res) {
       }
   }
 }
-
 

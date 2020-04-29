@@ -56,16 +56,16 @@ export const updatePassword = async (password,hash, email) => {
     }
   };
 
-  /**Get all users
-   * on the platform
-   */
-  export const getAllUsers = async ()  => {
-    try {
-      return await model.User.findAll();
-    } catch (error) {
-      throw error;
-    }
-  }
+  // /**Get all users
+  //  * on the platform
+  //  */
+  // export const getAllUsers = async ()  => {
+  //   try {
+  //     return await model.User.findAll();
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // }
 
   /** get single user on 
    * the application

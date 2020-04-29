@@ -45,12 +45,12 @@ export const verifyToken = (req, res, next) => {
 
 /**
  * this function
- * verifies user role
+ * verifies user is an admin
  *  
  */
 export const verifyAdmin = (req, res, next) => {
-  const { is_admin } = req.authData.payload;
-  if (is_admin) {
+  const { role } = req.authData.payload;
+  if (role === 'admin') {
     req.body.adminfullname = req.authData.payload.fullname;
     return next();
   }

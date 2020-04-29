@@ -27,9 +27,9 @@ export const userValidator = {
 
     try {
         const result  = await findUserByEmail(email);
-        //console.log('res', result);
+       
         if(result === null || result === undefined){
-            //console.log('WAHALA', result);
+            
             password = generatePassword();
 
             req.body.fullname = fullname;
@@ -38,7 +38,7 @@ export const userValidator = {
             req.body.branch = branch;
             return next();
         }
-        //console.log('PROBLEM', result);
+        
         if(result.dataValues.email === email){
             return res.status(409).json({
                 status: 409,
@@ -54,6 +54,7 @@ export const userValidator = {
 },
 
 async loginUserValidator(req, res, next){
+    
     const { email, password } = req.body;
     const rules = {
         email: 'required|email|min:2',

@@ -19,8 +19,9 @@ module.exports = {
       password: {
         type: Sequelize.TEXT
       },
-      is_admin: {
-        type: Sequelize.BOOLEAN
+      role: {
+        type: Sequelize.ENUM('admin', 'staff'),
+        defaultValue: 'staff'
       },
       branch: {
         type: Sequelize.TEXT

@@ -11,10 +11,9 @@ module.exports = (sequelize, DataTypes) => {
       allowNull:false
     },
     password: DataTypes.TEXT,
-    is_admin: {
-      type:DataTypes.BOOLEAN,
-      defaultValue: false,
-      allowNull: false
+    role: {
+      type:DataTypes.ENUM('admin', 'staff'),
+      defaultValue: 'staff'
     },
     branch: DataTypes.TEXT
   }, {});
