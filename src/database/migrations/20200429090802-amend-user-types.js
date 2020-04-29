@@ -32,11 +32,11 @@ module.exports = {
       return queryInterface.dropTable('users');
     */
    return Promise.all([
-    queryInterface.removeColumn(
-    'Users',
-    'is_admin',
-    Sequelize.BOOLEAN
-   ),
+  //   queryInterface.removeColumn(
+  //   'Users',
+  //   'is_admin',
+  //   Sequelize.BOOLEAN
+  //  ),
    queryInterface.addColumn(
      'Users',
      'role',{
