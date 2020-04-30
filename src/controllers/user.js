@@ -56,23 +56,6 @@ export const userContoller = {
     }
 },
 
-// async loginUser(req, res){
-//     try {
-//     const token = createToken(req.body);
-//             return res.status(200).json({
-//                 status: 200,
-//                 token
-//             })
-    
-        
-//     } catch(error){
-//         return res.status(500).json({
-//             status: 500,
-//             error: error.message
-//         });
-//     }
-//   },
-
   
 /**
   * This function allows all types of users 
@@ -248,8 +231,9 @@ async adminGetAllUsers(req, res) {
         for (const key in rest) {
           if (rest.hasOwnProperty(key)) {
             const value =
-              key === "name" ? { [Op.like]: `%${rest[key]}%` } : rest[key];
-            options[key] = value;
+              key === "q" ? { [Op.like]: `%${rest[key]}%` } : rest[key];
+            const field = key === "q" ? "fullname" : key;
+            options[field] = value;
           }
         }
       }
@@ -261,9 +245,18 @@ async adminGetAllUsers(req, res) {
             offset,
             limit
           });
-          return res
+            if(data.rows.length > 0){
+            return res
             .status(200)
             .json({ data: data.rows, offset, limit, total: data.count });
+         }
+           else {
+              return res.status(404).json({
+                  status: 404,
+                  message: 'What are searching for is unavailable at this time'
+              })
+          }
+          
     } catch (error) {
       return res.status(500).json({
           status: 500,
@@ -349,4 +342,9 @@ async adminGetAllUsers(req, res) {
       }
   }
 }
+
+
+
+
+  
 
