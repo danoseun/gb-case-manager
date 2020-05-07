@@ -8,10 +8,11 @@ import { comparePassword, generatePassword } from '../helpers/password';
  */
 export const userValidator = {
    async addUserValidator(req, res, next){
-    let { fullname, email, password, branch } = req.body;
+    let { firstname, lastname, email, password, branch } = req.body;
 
     const rules = {
-        fullname: 'required|min:2',
+        firstname: 'required|min:2',
+        lastname: 'required|min:2',
         email: 'required|email|min:2',
         branch: 'required'
     };
@@ -32,7 +33,8 @@ export const userValidator = {
             
             password = generatePassword();
 
-            req.body.fullname = fullname;
+            req.body.firstname = firstname;
+            req.body.lastname = lastname;
             req.body.email = email;
             req.body.password = password;
             req.body.branch = branch;

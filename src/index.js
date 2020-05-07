@@ -5,8 +5,8 @@ import logger from 'morgan';
 import bodyParser from 'body-parser';
 import redis from 'redis';
 import {
-   userRouter
- } from '../src/routes/user';
+   userRouter, matterRouter
+ } from '../src/routes';
 
  
 
@@ -33,6 +33,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const port = process.env.PORT || 1600;
 
 app.use(userRouter);
+app.use(matterRouter);
 
 
 

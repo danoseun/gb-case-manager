@@ -56,9 +56,9 @@ module.exports = (sequelize, DataTypes) => {
       onDelete: 'CASCADE',
     });
 
-    Matter.hasMany(models.Resource, {
+    Matter.hasMany(models.MatterResource, {
       foreignKey: 'matterId',
-      as: 'resources',
+      as: 'matterresources',
       onDelete: 'CASCADE',
     });
   };

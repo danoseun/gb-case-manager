@@ -12,7 +12,7 @@ module.exports = {
         type: Sequelize.TEXT
       },
       code: {
-        type: Sequelize.INTEGER
+        type: Sequelize.TEXT
       },
       client: {
         type: Sequelize.ARRAY(Sequelize.STRING),

@@ -68,7 +68,7 @@ module.exports = (sequelize, DataTypes) => {
       onDelete: 'CASCADE',
     });
 
-    User.hasMany(models.UpadateResource, {
+    User.hasMany(models.UpdateResource, {
       foreignKey: 'userId',
       as: 'updateresources',
       onDelete: 'CASCADE',

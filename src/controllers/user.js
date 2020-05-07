@@ -16,7 +16,7 @@ import cryptoRandomString from 'crypto-random-string';
 
 
 /**
- * Validates user properties during creation
+ * User creation object
  */
 export const userContoller = {
     /**
@@ -24,9 +24,9 @@ export const userContoller = {
      * users to the platform
      * 
      */
-   async addUser(req, res){   
+   async addUser(req, res){  
     try {
-    let { fullname, email, password, branch, role } = req.body;
+    let { firstname, lastname, email, password, branch, role } = req.body;
     const userObject = {email, password};
     
     let hash = hashPassword(password);
@@ -43,15 +43,10 @@ export const userContoller = {
     
     const emailSent = registerEmailTemplate(adminName, userObject, loginurl);
     Transporter(emailSent, res);
-    // return res.status(200).json({
-    //     status: 201,
-    //     message: 'User successfully created'
-    // });
     } catch(error){
-        console.log('err', error);
         return res.status(500).json({
             status: 500,
-            error: error.message
+            error: error
         });
     }
 },

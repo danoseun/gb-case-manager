@@ -1,6 +1,6 @@
 module.exports = (sequelize, DataTypes) => {
     const Update = sequelize.define('Update', {
-      title: DataTypes.TITLE,
+      title: DataTypes.TEXT,
       description: DataTypes.TEXT,
       updatetype: DataTypes.STRING,
       case: DataTypes.TEXT,
@@ -34,9 +34,9 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: 'CASCADE',
       });
 
-      Update.hasMany(models.Resource, {
+      Update.hasMany(models.UpdateResource, {
         foreignKey: 'updateId',
-        as: 'resources',
+        as: 'updateresources',
         onDelete: 'CASCADE',
       });
     };

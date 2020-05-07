@@ -20,7 +20,6 @@ userRouter.post('/forgot', resetPassword);
 userRouter.patch('/password/reset/:token', receiveNewPassword);
 
 //admin routes
-//userRouter.post('/admin/login', loginUserValidator, loginAdmin);
 userRouter.post('/admin/verify', adminVerification);
 userRouter.post('/register', verifyToken, verifyAdmin, addUserValidator, addUser);
 userRouter.get('/users', verifyToken, verifyAdmin, adminGetAllUsers);
