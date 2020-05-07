@@ -9,16 +9,19 @@ module.exports = {
     'Users',
     [
       {
-        fullname: 'James Faker',
+        firstname: 'James',
+        lastname: 'Faker',
         email: 'asbengdev@gmail.com',
         password: hash,
         role: 'admin',
+        phone: '07033283421',
         branch: 'Lagos',
         createdAt: new Date(),
         updatedAt: new Date(),
       },
       {
-        fullname: 'Faker Jones',
+        firstname: 'Jones',
+        lastname: 'Davies',
         email: 'justthinking54@gmail.com',
         password: hash,
         role: 'admin',
@@ -27,7 +30,8 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
-        fullname: 'jdoe',
+        firstname: 'Johnson',
+        lastname: 'Dwayne',
         email: 'olubajidavid@gmail.com',
         password: hash,
         role: 'staff',
@@ -36,7 +40,8 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
-        fullname: 'jdoe',
+        firstname: 'Quincy',
+        lastname: 'Apache',
         email: 'seunad19@gmail.com',
         password: hash,
         role: 'staff',

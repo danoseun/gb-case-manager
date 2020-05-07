@@ -14,11 +14,6 @@ module.exports = (sequelize, DataTypes) => {
       as: 'author',
       onDelete: 'CASCADE',
     });
-
-    UpdateType.belongsToMany(models.Matter, {
-      foreignKey: 'updatetypeId',
-      through: 'MatterUpdateTypes'
-    });
   };
   return UpdateType;
 };

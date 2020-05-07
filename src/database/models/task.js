@@ -4,10 +4,16 @@ module.exports = (sequelize, DataTypes) => {
     task_detail: {
       type:DataTypes.TEXT
     },
-    case: DataTypes.TEXT,
     due_date: DataTypes.DATE,
     due_time: DataTypes.STRING,
-    assignee: DataTypes.TEXT,
+    assignees: {
+      type: DataTypes.ARRAY(DataTypes.STRING),
+      allownull: true,
+      defaultValue: []
+    },
+    status:{
+      type: DataTypes.ENUM('to-do','in-progress', 'completed')
+    },
     userId: {
       type: DataTypes.INTEGER,
       allowNull: false,

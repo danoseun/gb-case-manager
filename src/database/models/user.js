@@ -1,19 +1,26 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define('User', {
-    fullname: {
+    firstname: {
       type:DataTypes.STRING,
-      allowNull: false
+    },
+    lastname: {
+      type:DataTypes.STRING,
     },
     email: {
       type:DataTypes.STRING,
-      unique: true,
-      allowNull:false
+      unique: true
     },
     password: DataTypes.TEXT,
     role: {
       type:DataTypes.ENUM('admin', 'staff'),
       defaultValue: 'staff'
+    },
+    phone: {
+      type:DataTypes.STRING
+    },
+    profile_picture: {
+      type:DataTypes.TEXT
     },
     branch: DataTypes.TEXT
   }, {});
@@ -37,6 +44,12 @@ module.exports = (sequelize, DataTypes) => {
       onDelete: 'CASCADE',
     });
 
+    User.hasMany(models.Update, {
+      foreignKey: 'userId',
+      as: 'updates',
+      onDelete: 'CASCADE',
+    });
+
     User.hasMany(models.UpdateType, {
       foreignKey: 'userId',
       as: 'updatetypes',
@@ -46,6 +59,29 @@ module.exports = (sequelize, DataTypes) => {
     User.hasMany(models.Event, {
       foreignKey: 'userId',
       as: 'events',
+      onDelete: 'CASCADE',
+    });
+
+    User.hasMany(models.MatterResource, {
+      foreignKey: 'userId',
+      as: 'matterresources',
+      onDelete: 'CASCADE',
+    });
+
+    User.hasMany(models.UpadateResource, {
+      foreignKey: 'userId',
+      as: 'updateresources',
+      onDelete: 'CASCADE',
+    });
+    
+    User.hasMany(models.Comment, {
+      foreignKey: 'userId',
+      as: 'comments',
+      onDelete: 'CASCADE',
+    });
+    User.hasMany(models.Client, {
+      foreignKey: 'userId',
+      as: 'clients',
       onDelete: 'CASCADE',
     });
   };

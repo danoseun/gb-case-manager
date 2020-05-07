@@ -14,13 +14,6 @@ module.exports = (sequelize, DataTypes) => {
       as: 'author',
       onDelete: 'CASCADE',
     })
-
-    MatterType.hasMany(models.Matter, {
-      foreignKey: 'mattertypeId',
-      as: 'matters',
-      onDelete: 'CASCADE',
-    });
-    
   };
   return MatterType;
 };

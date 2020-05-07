@@ -1,36 +1,25 @@
 'use strict';
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('Tasks', {
+    return queryInterface.createTable('UpdateResources', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      task_detail: {
-        type: Sequelize.TEXT
-      },
-      due_date: {
-        type: Sequelize.DATE
-      },
-      due_time: {
-        type: Sequelize.STRING
-      },
-      assignees: {
-        type: Sequelize.ARRAY(Sequelize.STRING),
-        defaultValue: []
-      },
-      status: {
-        type: Sequelize.ENUM('to-do','in-progress', 'completed')
-      },
       userId: {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
-      matterId: {
+      updateId: {
         type: Sequelize.INTEGER,
         allowNull: false,
+      },
+      attached_reources: {
+        type:Sequelize.ARRAY(Sequelize.JSONB),
+        allownull: true,
+        defaultValue: [] 
       },
       createdAt: {
         allowNull: false,
@@ -43,6 +32,6 @@ module.exports = {
     });
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('Tasks');
+    return queryInterface.dropTable('UpdateResources');
   }
 };

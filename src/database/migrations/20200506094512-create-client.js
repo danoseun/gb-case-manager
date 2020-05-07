@@ -1,34 +1,23 @@
 'use strict';
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('Tasks', {
+    return queryInterface.createTable('Clients', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      task_detail: {
+      name: {
         type: Sequelize.TEXT
       },
-      due_date: {
-        type: Sequelize.DATE
-      },
-      due_time: {
+      phone: {
         type: Sequelize.STRING
       },
-      assignees: {
-        type: Sequelize.ARRAY(Sequelize.STRING),
-        defaultValue: []
-      },
-      status: {
-        type: Sequelize.ENUM('to-do','in-progress', 'completed')
+      email: {
+          type: Sequelize.STRING
       },
       userId: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-      },
-      matterId: {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
@@ -43,6 +32,6 @@ module.exports = {
     });
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('Tasks');
+    return queryInterface.dropTable('Clients');
   }
 };

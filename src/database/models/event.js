@@ -4,7 +4,11 @@ module.exports = (sequelize, DataTypes) => {
     name: DataTypes.TEXT,
     venue: DataTypes.TEXT,
     date: DataTypes.DATE,
-    employee_assigned: DataTypes.TEXT,
+    employees_assigned: {
+      type: DataTypes.ARRAY(DataTypes.STRING),
+      allownull: true,
+      defaultValue: [] 
+    },
     userId: {
       type:DataTypes.INTEGER,
       allowNull: false,

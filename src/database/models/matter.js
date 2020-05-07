@@ -2,49 +2,39 @@
 module.exports = (sequelize, DataTypes) => {
   const Matter = sequelize.define('Matter', {
     title: {
-      allowNull:false,
       type:DataTypes.TEXT
     },
     code: {
-      allowNull:false,
-      type:DataTypes.INTEGER
-    },
-    contact_person: {
-      allowNull:false,
       type:DataTypes.TEXT
     },
+    client: {
+      type:DataTypes.ARRAY(DataTypes.STRING),
+      allownull: true,
+      defaultValue: [] 
+    },
     start_date: {
-      allowNull:false,
       type:DataTypes.DATE
     },
     end_date: DataTypes.DATE,
     description: {
-      allowNull:false,
       type:DataTypes.TEXT
     },
-    type: {
-      allowNull:false,
+    matter_type: {
       type:DataTypes.TEXT
     },
-    assigned_lawyers: {
-      allowNull:false,
-      type:DataTypes.TEXT
-    },
-    assignee: {
-      allowNull:false,
-      type:DataTypes.TEXT
+    assignees: {
+      type:DataTypes.ARRAY(DataTypes.STRING),
+      allownull: true,
+      defaultValue: [] 
     },
     parties: DataTypes.TEXT,
-    resources: DataTypes.TEXT,
-    court_date: DataTypes.DATE,
     userId: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    mattertypeId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
+    created_by: {
+      type: DataTypes.STRING,
+    }
   }, {});
   Matter.associate = function(models) {
     // associations can be defined here
@@ -52,13 +42,7 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'userId',
       as: 'author',
       onDelete: 'CASCADE',
-    })
-
-    Matter.belongsTo(models.MatterType, {
-      foreignKey: 'mattertypeId',
-      as: 'mattertype',
-      onDelete: 'CASCADE',
-    })
+    });
 
     Matter.hasMany(models.Task, {
       foreignKey: 'matterId',
@@ -66,9 +50,16 @@ module.exports = (sequelize, DataTypes) => {
       onDelete: 'CASCADE',
     });
 
-    Matter.belongsToMany(models.UpdateType, {
+    Matter.hasMany(models.Update, {
       foreignKey: 'matterId',
-      through: 'MatterUpdateTypes'
+      as: 'updates',
+      onDelete: 'CASCADE',
+    });
+
+    Matter.hasMany(models.Resource, {
+      foreignKey: 'matterId',
+      as: 'resources',
+      onDelete: 'CASCADE',
     });
   };
   return Matter;

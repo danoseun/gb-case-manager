@@ -9,56 +9,40 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       title: {
-        allowNull: false,
         type: Sequelize.TEXT
       },
       code: {
-        allowNull: false,
         type: Sequelize.INTEGER
       },
-      contact_person: {
-        allowNull: false,
-        type: Sequelize.TEXT
+      client: {
+        type: Sequelize.ARRAY(Sequelize.STRING),
+        defaultValue: []
       },
       start_date: {
-        allowNull: false,
         type: Sequelize.DATE
       },
       end_date: {
         type: Sequelize.DATE
       },
       description: {
-        allowNull: false,
         type: Sequelize.TEXT
       },
-      type: {
-        allowNull: false,
+      matter_type: {
         type: Sequelize.TEXT
       },
-      assigned_lawyers: {
-        allowNull: false,
-        type: Sequelize.TEXT
-      },
-      assignee: {
-        allowNull: false,
-        type: Sequelize.TEXT
+      assignees: {
+        type: Sequelize.ARRAY(Sequelize.STRING),
+        defaultValue: []
       },
       parties: {
         type: Sequelize.TEXT
-      },
-      resources: {
-        type: Sequelize.TEXT
-      },
-      court_date: {
-        type: Sequelize.DATE
       },
       userId: {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
-      mattertypeId: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
+      created_by:{
+        type: Sequelize.STRING
       },
       createdAt: {
         allowNull: false,

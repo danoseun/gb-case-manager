@@ -8,12 +8,13 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      fullname: {
-        allowNull: false,
+      firstname: {
+        type: Sequelize.STRING
+      },
+      lastname: {
         type: Sequelize.STRING
       },
       email: {
-        allowNull: false,
         type: Sequelize.STRING
       },
       password: {
@@ -22,6 +23,12 @@ module.exports = {
       role: {
         type: Sequelize.ENUM('admin', 'staff'),
         defaultValue: 'staff'
+      },
+      phone: {
+        type:Sequelize.STRING
+      },
+      profile_picture: {
+        type:Sequelize.TEXT
       },
       branch: {
         type: Sequelize.TEXT
