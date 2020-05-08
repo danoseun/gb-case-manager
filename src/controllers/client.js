@@ -27,5 +27,20 @@ import model from '../database/models';
                  error: error.message
              });
          }
+     },
+
+     async getAllClients(req, res){
+         const clients = await model.Client.findAll({}).map(el => el.get({ raw: true }));
+         try{
+             return res.status(200).json({
+                 status: 200,
+                 clients
+             });
+         } catch(error){
+             return res.status(500).json({
+                 status: 500,
+                 err: error.message
+             });
+         }
      }
  }

@@ -25,5 +25,20 @@ import model from '../database/models';
                  error: error.message
              });
          }
-     }
+     },
+
+     async getAllMatterTypes(req, res){
+        const mattertypes = await model.MatterType.findAll({}).map(el => el.get({ raw: true }));
+        try {
+            return res.status(200).json({
+                status: 200,
+                mattertypes
+            });
+        } catch(error){
+            return res.status(500).json({
+                status: 500,
+                err: error.message
+            });
+        }
+    }
  }

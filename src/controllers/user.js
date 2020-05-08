@@ -248,7 +248,7 @@ async adminGetAllUsers(req, res) {
            else {
               return res.status(404).json({
                   status: 404,
-                  message: 'What are searching for is unavailable at this time'
+                  message: 'What you are searching for is unavailable at this time'
               })
           }
           
