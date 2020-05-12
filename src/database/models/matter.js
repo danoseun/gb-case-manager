@@ -23,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
       type:DataTypes.TEXT
     },
     assignees: {
-      type:DataTypes.ARRAY(DataTypes.STRING),
+      type:DataTypes.ARRAY(DataTypes.INTEGER),
       allownull: true,
       defaultValue: [] 
     },

@@ -31,7 +31,7 @@ export const registerEmailTemplate = (adminName, userObject, loginurl) => {
     const from = 'oluwaseun@asb.ng';
     const subject = 'Invitation to Join Ghalib Chambers Platform';
     const html = `
-    <p>${adminName} has invited you to join the Ghalib Chambers Case Management Portal as a staff.</p>
+    <p>${adminName} has invited you to join the Ghalib Chambers Case Management Portal.</p>
     <p>Here are your login details, email:${userObject.email} and password:${userObject.password}</p>
     <p>Login at <a href=${loginurl}>${loginurl}</a> with the above details after which we strongly recommend you change you password afterwards</p>
     <p>Ghalib Chambers.</p>
@@ -73,6 +73,24 @@ export const updatePassword = async (password,hash, email) => {
   export const getUser = async (email) => {
     try {
         const User = model.User.findOne({ where: { email } });
+        return User;
+      } catch (error) {
+        throw error;
+      }
+  }
+
+
+  /** get user by id on 
+   * the application
+   */
+  export const getUserById = async (id) => {
+    try {
+        const User = model.User.findOne({ 
+          attributes: 
+          { 
+            exclude: ['password'] 
+          },
+          where: { id } });
         return User;
       } catch (error) {
         throw error;

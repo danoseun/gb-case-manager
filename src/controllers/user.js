@@ -24,15 +24,15 @@ export const userContoller = {
      * users to the platform
      * 
      */
-   async addUser(req, res){  
+   async addUser(req, res){ 
     try {
-    let { firstname, lastname, email, password, branch, role } = req.body;
+    let { email, password } = req.body;
     const userObject = {email, password};
     
     let hash = hashPassword(password);
     req.body.password = hash;
     
-    var clonedObject = Object.assign({}, req.body);
+    let clonedObject = Object.assign({}, req.body); 
     
     delete clonedObject.adminfullname;
     let user = await model.User.create(clonedObject);
@@ -283,7 +283,8 @@ async adminGetAllUsers(req, res) {
           }
           else {
               user.role = req.body.role || user.role;
-              user.fullname = req.body.fullname || user.fullname;
+              user.firstname = req.body.firstname || user.firstname;
+              user.lastname = req.body.lastname || user.lastname;
               user.branch = req.body.branch || user.branch;
               const val = await user.save();
 

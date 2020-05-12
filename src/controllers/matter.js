@@ -1,5 +1,9 @@
 import model from '../database/models';
 import { getMatter } from '../services/matter';
+import { getUserById } from '../services/user';
+import { mergeUnique, convertParamToNumber } from '../helpers/util';
+import { uploader } from '../helpers/cloudinary';
+import { dataUri } from '../helpers/multer';
 
 /**
  * Matter creation object
@@ -29,7 +33,7 @@ import { getMatter } from '../services/matter';
                  status: 201,
                  matter
              });
-         }catch(error){
+         } catch(error){
              return res.status(500).json({
                  status: 500,
                  error: error.message
@@ -39,10 +43,15 @@ import { getMatter } from '../services/matter';
 
      async getMatter(req, res){
         let { id } = req.params;
-        id = Number(id);
+        id = convertParamToNumber(id);
 
         try {
             const matter = await getMatter(id);
+            let newArr = matter.assignees.map(id => Number(id));
+            let newAssignees;
+            newAssignees = await Promise.all(newArr.map(id => getUserById(id)));
+            newAssignees.map(el => el.get({ raw: true }));
+            matter.assignees = newAssignees;
 
             if(matter){
                 return res.status(200).json({
@@ -109,18 +118,19 @@ import { getMatter } from '../services/matter';
 
   async updateMatter(req, res){
       let { id } = req.params;
-      id = Number(id);
-
+      id = convertParamToNumber(id);
+      
       try {
       const matter = await getMatter(id);
+      
       matter.title = req.body.title || matter.title;
       matter.code = req.body.code || matter.code;
-      matter.client = req.body.client.split(',') || matter.client;
+      matter.client = req.body.client ? mergeUnique(matter.client, req.body.client.split(',')) : matter.client;
       matter.start_date = req.body.start_date || matter.start_date;
       matter.end_date = req.body.end_date || matter.end_date;
       matter.description = req.body.description || matter.description;
       matter.matter_type = req.body.mattertype || matter.matter_type;
-      matter.assignees = req.body.assignees.split(',') || matter.assignees;
+      matter.assignees = mergeUnique(matter.assignees, req.body.assignees.split(',')) || matter.assignees;
       matter.parties = req.body.party || matter.parties;
       
       const newmatter = await matter.save()
@@ -134,5 +144,34 @@ import { getMatter } from '../services/matter';
               error: error.message
           });
       }
+  },
+
+  async deleteMatter(req, res){
+      let { id } = params;
+      id = convertParamToNumber(id);
+
+      const matter = await getMatter(id);
+      if(matter){
+          await matter.destroy();
+          return res.status(200).json({
+              status: 200,
+              message: 'Matter successfully deleted'
+          });
+      } else {
+          return res.status(404).json({
+              status: 404,
+              message: 'matter not found'
+          });
+      }
+  },
+
+  async uploadMatterResource(req, res){
+      console.log('REQ', req.file);
+    const { id } = req.authData.payload;
+
+    const file = dataUri(req).content;
+    console.log('FILE', file);
+    const image = await uploader.upload(file, { resource_type: "auto" });
+    console.log('IMAGE', image);
   }
  }

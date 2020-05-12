@@ -11,6 +11,7 @@ module.exports = {
       {
         firstname: 'James',
         lastname: 'Faker',
+        fullname: 'James Faker',
         email: 'asbengdev@gmail.com',
         password: hash,
         role: 'admin',
@@ -22,6 +23,7 @@ module.exports = {
       {
         firstname: 'Jones',
         lastname: 'Davies',
+        fullname: 'Jones Davies',
         email: 'justthinking54@gmail.com',
         password: hash,
         role: 'admin',
@@ -32,6 +34,7 @@ module.exports = {
       {
         firstname: 'Johnson',
         lastname: 'Dwayne',
+        fullname: 'Johnson Dwayne',
         email: 'olubajidavid@gmail.com',
         password: hash,
         role: 'staff',
@@ -42,7 +45,8 @@ module.exports = {
       {
         firstname: 'Quincy',
         lastname: 'Apache',
-        email: 'seunad19@gmail.com',
+        fullname: 'Quincy Apache',
+        email: 'hiemail19@gmail.com',
         password: hash,
         role: 'staff',
         branch: 'Lagos',

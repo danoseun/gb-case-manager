@@ -1,5 +1,5 @@
 import Validator from 'validatorjs';
-import db from '../database/models';
+//import db from '../database/models';
 import { findUserByEmail } from '../services/user'
 import { comparePassword, generatePassword } from '../helpers/password';
 
@@ -33,11 +33,14 @@ export const userValidator = {
             
             password = generatePassword();
 
+            firstname = firstname.trim();
+            lastname = lastname.trim();
             req.body.firstname = firstname;
             req.body.lastname = lastname;
-            req.body.email = email;
-            req.body.password = password;
-            req.body.branch = branch;
+            req.body.fullname = `${firstname} ${lastname}`
+            req.body.email = email.trim();
+            req.body.password = password.trim();
+            req.body.branch = branch.trim();
             return next();
         }
         

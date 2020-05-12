@@ -1,0 +1,73 @@
+
+
+module.exports = {
+  up: (queryInterface, Sequelize) => queryInterface.bulkInsert(
+    'Matters',
+    [
+      {
+        title: 'new title',
+        code: 'GH/12/13',
+        client: ['client one'],
+        start_date: new Date(),
+        end_date: new Date(),
+        description: 'whatever',
+        matter_type: 'litigation',
+        assignees: [1,2,3],
+        parties: 'some parties',
+        userId: 1,
+        created_by: 'some admin',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        title: 'new title two',
+        code: 'GH/12/14',
+        client: ['client two'],
+        start_date: new Date(),
+        end_date: new Date(),
+        description: 'whatever',
+        matter_type: 'litigation',
+        assignees: [2,3,4],
+        parties: 'some parties',
+        userId: 1,
+        created_by: 'some admin',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        title: 'new title three',
+        code: 'GH/12/15',
+        client: ['client three'],
+        start_date: new Date(),
+        end_date: new Date(),
+        description: 'whatever',
+        matter_type: 'litigation',
+        assignees: [1,2,3],
+        parties: 'some parties',
+        userId: 1,
+        created_by: 'some admin',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        title: 'another new title',
+        code: 'GH/12/17',
+        client: ['client four'],
+        start_date: new Date(),
+        end_date: new Date(),
+        description: 'whatever',
+        matter_type: 'litigation',
+        assignees: [2,1,3],
+        parties: 'some parties',
+        userId: 1,
+        created_by: 'some admin',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ],
+
+    {},
+  ),
+  
+  down: (queryInterface, Sequelize) => queryInterface.bulkDelete('Matters', null, {})
+};
