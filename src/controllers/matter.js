@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import fs from 'fs';
+//import fs from 'fs';
 import model from '../database/models';
 import sequelize from 'sequelize';
 import { getMatter } from '../services/matter';
