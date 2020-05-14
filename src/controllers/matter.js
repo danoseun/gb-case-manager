@@ -25,7 +25,7 @@ cloudinary.config({
       * this functionality allows admin to create matter
       */
      async addMatter(req, res){
-         console.log('REQ', req.body.fullname, req.authData.payload, req.authData.payload.fullname);
+         console.log('REQ', req.body.adminfullname, req.authData.payload, req.authData.payload.fullname);
          return;
          const matterObj = {
              title: req.body.title,
