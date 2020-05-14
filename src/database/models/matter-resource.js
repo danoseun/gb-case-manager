@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
         type:DataTypes.INTEGER,
         allownull: false
     },
-    attached_reources: {
+    attached_resources: {
         type:DataTypes.ARRAY(DataTypes.JSONB),
         allownull: true,
         defaultValue: [] 

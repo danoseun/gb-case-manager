@@ -27,6 +27,15 @@ module.exports = (sequelize, DataTypes) => {
       allownull: true,
       defaultValue: [] 
     },
+    location: {
+      type:DataTypes.STRING
+    },
+    branch: {
+      type: DataTypes.STRING
+    },
+    status: {
+      type:DataTypes.ENUM('active', 'closed')
+    },
     parties: DataTypes.TEXT,
     userId: {
       type: DataTypes.INTEGER,

@@ -16,7 +16,7 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
-      attached_reources: {
+      attached_resources: {
         type:Sequelize.ARRAY(Sequelize.JSONB),
         allownull: true,
         defaultValue: [] 

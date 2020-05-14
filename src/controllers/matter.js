@@ -1,9 +1,20 @@
+import dotenv from 'dotenv';
+import fs from 'fs';
 import model from '../database/models';
+import sequelize from 'sequelize';
 import { getMatter } from '../services/matter';
 import { getUserById } from '../services/user';
 import { mergeUnique, convertParamToNumber } from '../helpers/util';
-import { uploader } from '../helpers/cloudinary';
-import { dataUri } from '../helpers/multer';
+//import cloudinary from '../helpers/cloudinary';
+//import { dataUri } from '../helpers/multer';
+let cloudinary = require('cloudinary').v2;
+dotenv.config();
+
+cloudinary.config({
+    cloud_name: process.env.CLOUD_NAME,
+    api_key: process.env.API_KEY,
+    api_secret: process.env.API_SECRET
+})
 
 /**
  * Matter creation object
@@ -14,6 +25,7 @@ import { dataUri } from '../helpers/multer';
       * this functionality allows admin to create matter
       */
      async addMatter(req, res){
+         
          const matterObj = {
              title: req.body.title,
              code: req.body.code,
@@ -23,9 +35,12 @@ import { dataUri } from '../helpers/multer';
              description: req.body.description,
              matter_type: req.body.mattertype,
              assignees: req.body.assignees.split(','),
+             location: req.body.location,
+             branch: req.authData.payload.branch,
+             status: req.body.status,
              parties: req.body.party,
              userId: req.authData.payload.id,
-             created_by: req.body.adminfullname
+             created_by: req.authData.payload.fullname
          };
          try {
              let matter = await model.Matter.create(matterObj);
@@ -165,13 +180,113 @@ import { dataUri } from '../helpers/multer';
       }
   },
 
-  async uploadMatterResource(req, res){
-      console.log('REQ', req.file);
-    const { id } = req.authData.payload;
+  async uploadMatterResources(req, res){
+      //console.log('REQ', req.authData.payload)
+      
+    try {
+        let id = convertParamToNumber(req.params.id);
+        const matter = await getMatter(id);
+        if(!matter){
+            return res.status(404).json({
+                status: 404,
+                error: 'Matter you want to upload resource for is not available'
+            });
+        }
+        if(!req.files){
+            return res.status(400).json({
+                status: 400,
+                error: 'No files attached'
+            })
+        }
+        const files = req.files.image;
+        let uploads = files.map(file => new Promise((resolve, reject) => {
+          cloudinary.uploader.upload(file.tempFilePath, { resource_type: "auto"}, (err, result) =>{
+              if(err) reject(err);
+              else resolve(result);
+           })
+        })
+      )
+        let result = []
+      
+            try {
+                result = await Promise.all(uploads)
+                //fs.rmdirSync('./tmp', { recursive: true });
+            } catch(err){
+            return res.status(400).json({
+                status: 400,
+                error: err.message
+            });
+        }
+        
+        const resourceObj = {
+            userId:req.authData.payload.id,
+            matterId:matter.id,
+            attached_resources:result
+        }
+        const newMatterResource = await model.MatterResource.create(resourceObj)
+        return res.status(201).json({
+            status: 201,
+            newMatterResource
+        });
+    } catch(err){
+          return res.status(500).json({
+              status: 500,
+              err: err.message
+          })
+      }
+    },
+    
+    async getMatterResources(req,res){
+        let matterId = convertParamToNumber(req.params.id);
+        try{
+            const result = await model.MatterResource.findAll({
+                where: {
+                    matterId
+                  }
+            }).map(el => el.get({ raw: true }));
+            if(!result) {
+                return res.status(404).json({
+                    status: 404,
+                    message: 'No resources have been created for this matter'
+                });
+            }
+            else {
+                return res.status(200).json({
+                    status: 200,
+                    result
+                })
+            }
+        } catch(error){
+            return res.status(500).json({
+                err: error.message
+            })
+        }
+    },
 
-    const file = dataUri(req).content;
-    console.log('FILE', file);
-    const image = await uploader.upload(file, { resource_type: "auto" });
-    console.log('IMAGE', image);
+    async deleteMatterResource(req, res){
+        let matterId = convertParamToNumber(req.params.id);
+        let public_id = req.params.public_id;
+        try {
+            const resource = await model.MatterResource.destroy({
+             //attributes: ['attached_resources'],
+             where: {
+                matterId,
+                attached_resources:{
+                    [sequelize.Op.contains]: [{'public_id': req.params.public_id}]
+            }
+        }
+              })
+              console.log('RESOURCE', resource);
+              return res.status(204).json({
+                  status: 204,
+                  resource,
+                  message: 'Resource deleted'
+              });
+
+        } catch(error){
+            return res.status(500).json({
+                err: error.message
+            })
+    }
   }
- }
+}

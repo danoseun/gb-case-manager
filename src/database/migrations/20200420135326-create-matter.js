@@ -31,8 +31,17 @@ module.exports = {
         type: Sequelize.TEXT
       },
       assignees: {
-        type: Sequelize.ARRAY(Sequelize.STRING),
+        type: Sequelize.ARRAY(Sequelize.INTEGER),
         defaultValue: []
+      },
+      location: {
+        type: Sequelize.STRING
+      },
+      branch: {
+        type: Sequelize.STRING
+      },
+      status: {
+        type: Sequelize.ENUM('active', 'closed')
       },
       parties: {
         type: Sequelize.TEXT
