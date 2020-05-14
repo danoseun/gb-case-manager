@@ -3,10 +3,11 @@ import model from '../database/models'
 import { Op } from 'sequelize';
 import { comparePassword, hashPassword, checkPassword } from '../helpers/password';
 import { findUserByEmail, registerEmailTemplate, 
-        updatePassword, getUser } from '../services/user'
+        updatePassword, getUser, getUserById } from '../services/user'
 import { emailTemplate, Transporter, getPasswordResetURL, 
         passwordResetEmailTemplate, 
         useUserDetailToMakeToken } from '../helpers/email';
+import { convertParamToNumber } from '../helpers/util'; 
 import { createToken } from '../middleware/auth';
 import { redisClient } from '../index'
 import jwt from 'jsonwebtoken';
@@ -265,26 +266,20 @@ async adminGetAllUsers(req, res) {
    * 
    */
   async adminUpdateUserProfile(req, res){
-    if (!req.body.email || req.body.email.trim() === ''){
-        return res.status(400).json({
-            status: 400,
-            error: 'Enter user email before role can be changed'
-        });
-    }
-    let { email } = req.body;
-    email = email.trim();
+    let id = convertParamToNumber(req.params.id);
       try {
-          const user = await getUser(email)
+          const user = await getUserById(id)
           if(!user){
               return res.status(404).json({
                   status: 400,
-                  error: 'Unknown email, please check email and try again later'
+                  error: 'There wan an error retrieving this user'
               });
           }
           else {
               user.role = req.body.role || user.role;
-              user.firstname = req.body.firstname || user.firstname;
-              user.lastname = req.body.lastname || user.lastname;
+              user.firstname = req.body.firstname ? req.body.firstname.trim() : user.firstname;
+              user.lastname = req.body.lastname ? req.body.lastname.trim() : user.lastname;
+              user.fullname = `${user.firstname} ${user.lastname}`
               user.branch = req.body.branch || user.branch;
               const val = await user.save();
 
@@ -298,7 +293,7 @@ async adminGetAllUsers(req, res) {
       catch(error){
           return res.status(500).json({
               status: 500,
-              err: error.message
+              err: error
           });
       }
   },
@@ -307,16 +302,9 @@ async adminGetAllUsers(req, res) {
    * admin can delete users 
    */
   async adminDeleteUser(req, res){
-      if (!req.body.email || req.body.email.trim() === ''){
-          return res.status(400).json({
-              status: 400,
-              error: 'Enter user email to be deleted'
-          });
-      }
-      let { email } = req.body;
-      email = email.trim();
+      let id = convertParamToNumber(req.params.id);
       try {
-          const user = await getUser(email);
+          const user = await getUserById(id);
           if(user) {
                 await user.destroy();
                 return res.status(200).json({

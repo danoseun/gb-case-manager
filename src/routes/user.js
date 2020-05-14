@@ -23,5 +23,5 @@ userRouter.patch('/password/reset/:token', receiveNewPassword);
 userRouter.post('/admin/verify', adminVerification);
 userRouter.post('/register', verifyToken, verifyAdmin, addUserValidator, addUser);
 userRouter.get('/users', verifyToken, verifyAdmin, adminGetAllUsers);
-userRouter.patch('/user', verifyToken, verifyAdmin, adminUpdateUserProfile);
-userRouter.delete('/user', verifyToken, verifyAdmin, adminDeleteUser);
+userRouter.put('/users/:id', verifyToken, verifyAdmin, adminUpdateUserProfile);
+userRouter.delete('/users/:id', verifyToken, verifyAdmin, adminDeleteUser);

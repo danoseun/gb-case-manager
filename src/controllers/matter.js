@@ -28,12 +28,12 @@ cloudinary.config({
          const matterObj = {
              title: req.body.title,
              code: req.body.code,
-             client: req.body.client.split(','),
+             client: req.body.client,
              start_date: req.body.start_date,
              end_date: req.body.end_date,
              description: req.body.description,
              matter_type: req.body.mattertype,
-             assignees: req.body.assignees.split(','),
+             assignees: req.body.assignees,
              location: req.body.location,
              branch: req.authData.payload.branch,
              status: req.body.status,
@@ -139,12 +139,14 @@ cloudinary.config({
       
       matter.title = req.body.title || matter.title;
       matter.code = req.body.code || matter.code;
-      matter.client = req.body.client ? mergeUnique(matter.client, req.body.client.split(',')) : matter.client;
+      matter.client = req.body.client ? mergeUnique(matter.client, req.body.client) : matter.client;
       matter.start_date = req.body.start_date || matter.start_date;
       matter.end_date = req.body.end_date || matter.end_date;
       matter.description = req.body.description || matter.description;
       matter.matter_type = req.body.mattertype || matter.matter_type;
-      matter.assignees = mergeUnique(matter.assignees, req.body.assignees.split(',')) || matter.assignees;
+      matter.assignees = mergeUnique(matter.assignees, req.body.assignees) || matter.assignees;
+      matter.location = req.body.location || matter.location;
+      matter.status = req.body.status || matter.status;
       matter.parties = req.body.party || matter.parties;
       
       const newmatter = await matter.save()
@@ -271,7 +273,7 @@ cloudinary.config({
              where: {
                 matterId,
                 attached_resources:{
-                    [sequelize.Op.contains]: [{'public_id': req.params.public_id}]
+                    [sequelize.Op.contains]: [ { public_id : req.params.public_id } ]
             }
         }
               })
@@ -289,3 +291,5 @@ cloudinary.config({
     }
   }
 }
+
+
