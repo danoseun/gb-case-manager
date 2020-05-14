@@ -144,7 +144,7 @@ cloudinary.config({
       matter.end_date = req.body.end_date || matter.end_date;
       matter.description = req.body.description || matter.description;
       matter.matter_type = req.body.mattertype || matter.matter_type;
-      matter.assignees = mergeUnique(matter.assignees, req.body.assignees) || matter.assignees;
+      matter.assignees = req.body.assignees ? mergeUnique(matter.assignees, req.body.assignees) : matter.assignees; 
       matter.location = req.body.location || matter.location;
       matter.status = req.body.status || matter.status;
       matter.parties = req.body.party || matter.parties;
