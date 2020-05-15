@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 //import fs from 'fs';
 import model from '../database/models';
-import sequelize from 'sequelize';
+import { Op } from 'sequelize';
 import { getMatter } from '../services/matter';
 import { getUserById } from '../services/user';
 import { mergeUnique, convertParamToNumber } from '../helpers/util';
@@ -274,7 +274,7 @@ cloudinary.config({
              where: {
                 matterId,
                 attached_resources:{
-                    [sequelize.Op.contains]: [ { "public_id" : public_id } ]
+                    [Op.contains]: [ { "public_id" : public_id } ]
             }
         }
               })
