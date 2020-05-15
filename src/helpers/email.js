@@ -29,7 +29,7 @@ export const emailTemplate = (email, code) => {
     <p>Here is your verification code: ${code}</p>
     <p>If you don’t use this code within 20 minutes, it will expire.</p>
     <p>If you are not trying to login at this moment please ignore this email.</p>
-    <p>–Your friends at Ghalib Chambers</p>
+    <p>Ghalib Chambers</p>
     `;
     return {
       from, to, subject, html
@@ -61,7 +61,7 @@ export const passwordResetEmailTemplate = (user, url) => {
   const subject = 'Password Reset';
   const html = `
   <p>Hey ${user.fullname}</p>
-  <p>We got a request that you forgot your password, If you really did, click the button below to reset password</p>
+  <p>We got a request that you forgot your password, If you really did, click the link below to reset password</p>
   <a href=${url}>${url}</a>
   <p>If you don’t use this link within 20 minutes, it will expire and you will have to request for another.</p>
   <p>Ghalib Chambers</p>
