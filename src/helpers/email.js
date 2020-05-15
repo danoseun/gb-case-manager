@@ -54,16 +54,17 @@ export const getPasswordResetURL = (req, token) => `${req.protocol}://${req.head
  * reset
  * 
  */
+
 export const passwordResetEmailTemplate = (user, url) => {
   const to = user.email;
   const from = 'oluwaseun@asb.ng';
   const subject = 'Password Reset';
   const html = `
   <p>Hey ${user.fullname}</p>
-  <p>You requested a password reset, kindly use the link below to reset your password:</p>
+  <p>We got a request that you forgot your password, If you really did, click the button below to reset password</p>
   <a href=${url}>${url}</a>
   <p>If you don’t use this link within 20 minutes, it will expire and you will have to request for another.</p>
-  <p>–Your friends at Ghalib Chambers</p>
+  <p>Ghalib Chambers</p>
   `;
   return {
     from, to, subject, html

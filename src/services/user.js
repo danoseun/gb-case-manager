@@ -26,6 +26,7 @@ export const Transporter = async (msg, res) => {
   }
 };
 
+
 export const registerEmailTemplate = (adminName, userObject, loginurl) => {
     const to = userObject.email;
     const from = 'oluwaseun@asb.ng';
@@ -33,7 +34,7 @@ export const registerEmailTemplate = (adminName, userObject, loginurl) => {
     const html = `
     <p>${adminName} has invited you to join the Ghalib Chambers Case Management Portal.</p>
     <p>Here are your login details, email:${userObject.email} and password:${userObject.password}</p>
-    <p>Login at <a href=${loginurl}>${loginurl}</a> with the above details after which we strongly recommend you change you password afterwards</p>
+    <p>Login at <a href=${loginurl}>${loginurl}</a> with the above details after which we strongly recommend you change your password afterwards.</p>
     <p>Ghalib Chambers.</p>
     `;
     return {

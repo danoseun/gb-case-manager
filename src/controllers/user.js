@@ -227,7 +227,7 @@ async adminGetAllUsers(req, res) {
         for (const key in rest) {
           if (rest.hasOwnProperty(key)) {
             const value =
-              key === "q" ? { [Op.like]: `%${rest[key]}%` } : rest[key];
+              key === "q" ? { [Op.iLike]: `%${rest[key]}%` } : rest[key];
             const field = key === "q" ? "fullname" : key;
             options[field] = value;
           }
