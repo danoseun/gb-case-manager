@@ -163,7 +163,7 @@ cloudinary.config({
   },
 
   async deleteMatter(req, res){
-      let { id } = params;
+      let { id } = req.params;
       id = convertParamToNumber(id);
 
       const matter = await getMatter(id);
@@ -267,13 +267,14 @@ cloudinary.config({
     async deleteMatterResource(req, res){
         let matterId = convertParamToNumber(req.params.id);
         let public_id = req.params.public_id;
+        console.log(typeof public_id);
         try {
             const resource = await model.MatterResource.destroy({
              //attributes: ['attached_resources'],
              where: {
                 matterId,
                 attached_resources:{
-                    [sequelize.Op.contains]: [ { public_id : req.params.public_id } ]
+                    [sequelize.Op.contains]: [ { "public_id" : public_id } ]
             }
         }
               })
