@@ -46,8 +46,8 @@ export const useUserDetailToMakeToken = (user) => {
   return token;
 };
 
-//`${req.protocol}://${req.headers.host}`
-export const getPasswordResetURL = (req, token) => `${req.protocol}://${req.headers.host}/password/reset/${token}`;
+//`${req.protocol}://${req.headers.host}/password/reset/${token}`;
+export const getPasswordResetURL = (req, token) => `https://ghalib-case-manager.herokuapp.com/password/reset/${token}`;
 
 /**
  * This template is specifically for password
