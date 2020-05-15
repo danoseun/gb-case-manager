@@ -95,7 +95,7 @@ cloudinary.config({
     if (Object.keys(rest).length) {
         for (const key in rest) {
           if (rest.hasOwnProperty(key)) {
-            const value =
+            const value =    
               key === "q" ? { [Op.iLike]: `%${rest[key]}%` } : rest[key];
             const field = key === "q" ? ("title" || "code") : key;
             options[field] = value;
