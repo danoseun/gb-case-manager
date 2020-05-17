@@ -221,6 +221,7 @@ cloudinary.config({
                 result = await Promise.all(uploads)
                 //fs.rmdirSync('./tmp', { recursive: true });
             } catch(err){
+                console.log('err', err);
             return res.status(400).json({
                 status: 400,
                 error: err.message
