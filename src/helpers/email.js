@@ -46,6 +46,7 @@ export const useUserDetailToMakeToken = (user) => {
   return token;
 };
 
+
 //`${req.protocol}://${req.headers.host}/password/reset/${token}`;
 export const getPasswordResetURL = (req, token) => `https://ghalib-case-manager.herokuapp.com/password/reset/${token}`;
 

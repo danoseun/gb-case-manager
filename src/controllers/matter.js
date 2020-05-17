@@ -4,7 +4,7 @@ import model from '../database/models';
 import { Op } from 'sequelize';
 import { getMatter } from '../services/matter';
 import { getUserById } from '../services/user';
-import { mergeUnique, convertParamToNumber } from '../helpers/util';
+import { mergeUnique, convertParamToNumber, log } from '../helpers/util';
 //import cloudinary from '../helpers/cloudinary';
 //import { dataUri } from '../helpers/multer';
 let cloudinary = require('cloudinary').v2;
@@ -61,12 +61,15 @@ cloudinary.config({
 
         try {
             const matter = await getMatter(id);
+            console.log('matter', matter);
             let newArr = matter.assignees.map(id => Number(id));
+            console.log('newArr', newArr);
             let newAssignees;
             newAssignees = await Promise.all(newArr.map(id => getUserById(id)));
+            console.log('newAssigees', newAssignees);
             newAssignees.map(el => el.get({ raw: true }));
             matter.assignees = newAssignees;
-
+            console.log('matter', matter);
             if(matter){
                 return res.status(200).json({
                     status: 200,
@@ -266,23 +269,29 @@ cloudinary.config({
 
     async deleteMatterResource(req, res){
         let matterId = convertParamToNumber(req.params.id);
+        let uploadId = convertParamToNumber(req.params.upload_id);
         let public_id = req.params.public_id;
         console.log(typeof public_id);
+        let MatterResource;
         try {
-            const resource = await model.MatterResource.destroy({
-             //attributes: ['attached_resources'],
-             where: {
-                matterId,
-                attached_resources:{
-                    [Op.contains]: [ { "public_id" : public_id } ]
-            }
-        }
-              })
-              console.log('RESOURCE', resource);
-              return res.status(204).json({
-                  status: 204,
-                  resource,
-                  message: 'Resource deleted'
+            MatterResource = await model.MatterResource.findOne({
+                where: {
+                    matterId,
+                    id:uploadId
+                }
+            });
+              console.log('HERE', MatterResource.dataValues.attached_resources);
+              let fetchedResource = MatterResource.dataValues.attached_resources;
+              console.log('HERE2', fetchedResource);
+              //someArray = someArray.filter(x => x.name !== 'Kristian')
+              //fetchedResource = fetchedResource.filter(resource => resource.public_id !== public_id);
+              fetchedResource.splice(public_id, 1);
+              console.log('HERE3', fetchedResource.length);
+              //return;
+              return res.status(200).json({
+                  //status: 204,
+                  fetchedResource
+                  //message: 'Resource deleted'
               });
 
         } catch(error){
@@ -292,5 +301,9 @@ cloudinary.config({
     }
   }
 }
+
+/**Improve email templates 
+ * Add edit profile for user
+ * */ 
 
 

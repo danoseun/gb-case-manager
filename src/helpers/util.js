@@ -13,3 +13,5 @@
  * to a number before use
  */
 export const convertParamToNumber = id => Number(id);
+
+export const log = (val) => console.log({val});
