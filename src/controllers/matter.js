@@ -66,9 +66,17 @@ cloudinary.config({
             console.log('newArr', newArr);
             let newAssignees;
             newAssignees = await Promise.all(newArr.map(id => getUserById(id)));
-            console.log('newAssigees', newAssignees);
-            newAssignees.map(el => el.get({ raw: true }));
-            matter.assignees = newAssignees;
+
+            // filter out instances of null
+            let filteredAssignees = newAssignees.filter(function (el) {
+                return el != null;
+              });
+              
+              console.log('F',filteredAssignees);
+
+            //console.log('newAssigees', newAssignees);
+            filteredAssignees.map(el => el.get({ raw: true }));
+            matter.assignees = filteredAssignees;
             console.log('matter', matter);
             if(matter){
                 return res.status(200).json({
