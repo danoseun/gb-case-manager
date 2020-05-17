@@ -40,7 +40,8 @@ export const userContoller = {
 
     const adminName = req.body.adminfullname;
 
-    const loginurl = `${req.protocol}://${req.headers.host}/login`;
+    //const loginurl = `${req.protocol}://${req.headers.host}/login`;
+    const loginurl = `https://ghalib-case-manager.herokuapp.com/login`;
     
     const emailSent = registerEmailTemplate(adminName, userObject, loginurl);
     Transporter(emailSent, res);
