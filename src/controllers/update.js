@@ -71,7 +71,7 @@ import { Op } from 'sequelize';
             if(matter){
                 matterId = matter.id;
                 let [attached_resources] = await getAllMatterResources(matterId);
-                console.log('here', result);
+                //console.log('here', result);
                 // if(result.length < 0){
                 //     return res.status(404).json({
                 //         status: 404,
