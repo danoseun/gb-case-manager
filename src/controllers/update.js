@@ -18,7 +18,7 @@ import { Op } from 'sequelize';
       * log update on a case
       */
      async addUpdate(req, res){
-         console.log(req.authData.payload);
+         console.log(req.authData.payload, req.body);
          return;
          let { matterId } = req.params;
          matterId = convertParamToNumber(matterId);
