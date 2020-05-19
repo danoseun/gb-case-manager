@@ -18,6 +18,7 @@ import { Op } from 'sequelize';
       * log update on a case
       */
      async addUpdate(req, res){
+         console.log(req.authData.payload);
          let { matterId } = req.params;
          matterId = convertParamToNumber(matterId);
          try {
@@ -70,6 +71,13 @@ import { Op } from 'sequelize';
             if(matter){
                 matterId = matter.id;
                 let result = await getAllMatterResources(matterId);
+                console.log('here', result);
+                if(!result){
+                    return res.status(404).json({
+                        status: 404,
+                        message: 'Here'
+                    });
+                }
                 const resources = result[0].attached_resources;
                 let updates = await getMatterUpdates(matterId);
                 //console.log('updates', updates);
