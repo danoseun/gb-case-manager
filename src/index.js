@@ -5,7 +5,8 @@ import logger from 'morgan';
 import bodyParser from 'body-parser';
 import redis from 'redis';
 import {
-   userRouter, matterRouter, clientRouter, matterTypeRouter
+   userRouter, matterRouter, clientRouter, matterTypeRouter,
+   updateRouter
  } from '../src/routes';
 
  
@@ -36,6 +37,7 @@ app.use(userRouter);
 app.use(matterRouter);
 app.use(clientRouter);
 app.use(matterTypeRouter);
+app.use(updateRouter);
 
 
 

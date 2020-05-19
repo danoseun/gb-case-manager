@@ -5,6 +5,7 @@ module.exports = (sequelize, DataTypes) => {
       updatetype: DataTypes.STRING,
       case: DataTypes.TEXT,
       new_court_date: DataTypes.DATE,
+      staff_name: DataTypes.STRING,
       userId: {
         type: DataTypes.INTEGER,
         allowNull: false,

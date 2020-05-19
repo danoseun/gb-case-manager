@@ -23,6 +23,7 @@ module.exports = {
       new_court_date: {
           type: Sequelize.DATE
       },
+      staff_name: Sequelize.STRING,
       userId: {
         type: Sequelize.INTEGER,
         allowNull: false,

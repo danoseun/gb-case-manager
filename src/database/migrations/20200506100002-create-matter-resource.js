@@ -17,9 +17,9 @@ module.exports = {
         allowNull: false,
       },
       attached_resources: {
-        type:Sequelize.ARRAY(Sequelize.JSONB),
-        allownull: true,
-        defaultValue: [] 
+        type:Sequelize.JSONB,
+        allownull: true
+        //defaultValue: [] 
       },
       createdAt: {
         allowNull: false,

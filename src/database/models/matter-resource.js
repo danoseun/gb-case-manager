@@ -10,9 +10,9 @@ module.exports = (sequelize, DataTypes) => {
         allownull: false
     },
     attached_resources: {
-        type:DataTypes.ARRAY(DataTypes.JSONB),
-        allownull: true,
-        defaultValue: [] 
+        type:DataTypes.JSONB,
+        allownull: true
+        //defaultValue: [] 
     }
   }, {});
   MatterResource.associate = function(models) {

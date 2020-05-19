@@ -14,3 +14,31 @@ import model from '../database/models';
         throw error;
       }
   }
+
+
+  export const getAllMatterResources = async (matterId) => {
+    try{
+       const resources = await model.MatterResource.findAll({
+           where: {
+               matterId
+             }
+       }).map(el => el.get({ raw: true }));
+        return resources
+    } catch(err){
+        throw err;
+    }
+}
+
+
+export const getMatterUpdates = async (matterId) => {
+  try{
+     const updates = await model.Update.findAll({
+         where: {
+             matterId
+           }
+     }).map(el => el.get({ raw: true }));
+      return updates
+  } catch(err){
+      throw err;
+  }
+}

@@ -95,47 +95,97 @@ cloudinary.config({
     },
 
     async getMatters(req, res){
-    let { offset, limit, order, sort, ...rest } = req.query;
-    offset = offset ? parseInt(offset) : 0;
-    limit = limit ? parseInt(limit) : 10;
-    let options = {};
-
-    if (Object.keys(rest).length) {
-        for (const key in rest) {
-          if (rest.hasOwnProperty(key)) {
-            const value =    
-              key === "q" ? { [Op.iLike]: `%${rest[key]}%` } : rest[key];
-            const field = key === "q" ? ("title" || "code") : key;
-            options[field] = value;
+    if(req.authData.payload.role === 'admin'){
+        let { offset, limit, order, sort, ...rest } = req.query;
+        offset = offset ? parseInt(offset) : 0;
+        limit = limit ? parseInt(limit) : 10;
+        let options = {};
+    
+        if (Object.keys(rest).length) {
+            for (const key in rest) {
+              if (rest.hasOwnProperty(key)) {
+                const value =    
+                  key === "q" ? { [Op.iLike]: `%${rest[key]}%` } : rest[key];
+                const field = key === "q" ? ("title" || "code") : key;
+                options[field] = value;
+              }
+            }
           }
-        }
-      }
-
-    try {
-        const data = await model.Matter.findAndCountAll({
-            where: options,
-            order: [[sort || "updatedAt", order || "DESC"]],
-            offset,
-            limit
+    
+        try {
+            const data = await model.Matter.findAndCountAll({
+                where: options,
+                order: [[sort || "updatedAt", order || "DESC"]],
+                offset,
+                limit
+              });
+                if(data.rows.length > 0){
+                return res
+                .status(200)
+                .json({ data: data.rows, offset, limit, total: data.count });
+             }
+               else {
+                  return res.status(404).json({
+                      status: 404,
+                      message: 'What you are searching for is unavailable at this time'
+                  })
+              }
+              
+        } catch (error) {
+          return res.status(500).json({
+              status: 500,
+              err: error.message
           });
-            if(data.rows.length > 0){
-            return res
-            .status(200)
-            .json({ data: data.rows, offset, limit, total: data.count });
-         }
-           else {
-              return res.status(404).json({
-                  status: 404,
-                  message: 'What you are searching for is unavailable at this time'
-              })
+        }
+    } else {
+        let { offset, limit, order, sort, ...rest } = req.query;
+        offset = offset ? parseInt(offset) : 0;
+        limit = limit ? parseInt(limit) : 10;
+        let options = {
+            where: { 
+            assignees:{
+                [sequelize.Op.contains]: req.authData.payload.id
+        }
+    }};
+    
+        if (Object.keys(rest).length) {
+            for (const key in rest) {
+              if (rest.hasOwnProperty(key)) {
+                const value =    
+                  key === "q" ? { [Op.iLike]: `%${rest[key]}%` } : rest[key];
+                const field = key === "q" ? ("title" || "code") : key;
+                options[field] = value;
+              }
+            }
           }
-          
-    } catch (error) {
-      return res.status(500).json({
-          status: 500,
-          err: error.message
-      });
+    
+        try {
+            const data = await model.Matter.findAndCountAll({
+                where: options,
+                order: [[sort || "updatedAt", order || "DESC"]],
+                offset,
+                limit
+              });
+                if(data.rows.length > 0){
+                return res
+                .status(200)
+                .json({ data: data.rows, offset, limit, total: data.count });
+             }
+               else {
+                  return res.status(404).json({
+                      status: 404,
+                      message: 'What you are searching for is unavailable at this time'
+                  })
+              }
+              
+        } catch (error) {
+          return res.status(500).json({
+              status: 500,
+              err: error.message
+          });
+        }
     }
+
   },
 
   async updateMatter(req, res){
@@ -219,6 +269,12 @@ cloudinary.config({
       
             try {
                 result = await Promise.all(uploads)
+                // result.forEach(function (item) {
+                //     console.log('res', result);
+                //     let x = Number(item.public_id);
+                //     console.log('type', typeof x)
+                //     return x;
+                // });
                 //fs.rmdirSync('./tmp', { recursive: true });
             } catch(err){
                 console.log('err', err);
@@ -273,31 +329,29 @@ cloudinary.config({
         }
     },
 
+
     async deleteMatterResource(req, res){
         let matterId = convertParamToNumber(req.params.id);
         let uploadId = convertParamToNumber(req.params.upload_id);
         let public_id = req.params.public_id;
-        console.log(typeof public_id);
-        let MatterResource;
+        console.log(typeof public_id, public_id);
         try {
-            MatterResource = await model.MatterResource.findOne({
-                where: {
-                    matterId,
-                    id:uploadId
-                }
-            });
-              console.log('HERE', MatterResource.dataValues.attached_resources);
-              let fetchedResource = MatterResource.dataValues.attached_resources;
-              console.log('HERE2', fetchedResource);
-              //someArray = someArray.filter(x => x.name !== 'Kristian')
-              //fetchedResource = fetchedResource.filter(resource => resource.public_id !== public_id);
-              fetchedResource.splice(public_id, 1);
-              console.log('HERE3', fetchedResource.length);
-              //return;
+            const resource = await model.MatterResource.destroy({
+             //attributes: ['attached_resources'],
+             where: {
+                matterId,
+                //id:uploadId,
+                attached_resources:{
+                    //[Op.col]: 'attached_resources.public_id'
+                    [Op.eq]: public_id
+            }
+        }
+              })
+              console.log('RESOURCE', resource);
               return res.status(200).json({
-                  //status: 204,
-                  fetchedResource
-                  //message: 'Resource deleted'
+                  status: 200,
+                  resource,
+                  message: 'Resource deleted'
               });
 
         } catch(error){
@@ -306,10 +360,46 @@ cloudinary.config({
             })
     }
   }
+
+//     async deleteMatterResource(req, res){
+//         let matterId = convertParamToNumber(req.params.id);
+//         let uploadId = convertParamToNumber(req.params.upload_id);
+//         let public_id = req.params.public_id;
+//         console.log(typeof public_id);
+//         let MatterResource;
+//         try {
+//             MatterResource = await model.MatterResource.findOne({
+//                 where: {
+//                     matterId,
+//                     id:uploadId
+//                 }
+//             });
+//               console.log('HERE', MatterResource.dataValues.attached_resources);
+//               let fetchedResource = MatterResource.dataValues.attached_resources;
+//               console.log('HERE2', fetchedResource);
+//               //someArray = someArray.filter(x => x.name !== 'Kristian')
+//               //fetchedResource = fetchedResource.filter(resource => resource.public_id !== public_id);
+//               fetchedResource.splice(public_id, 1);
+//               console.log('HERE3', fetchedResource.length);
+//               //return;
+//               return res.status(200).json({
+//                   //status: 204,
+//                   fetchedResource
+//                   //message: 'Resource deleted'
+//               });
+
+//         } catch(error){
+//             return res.status(500).json({
+//                 err: error.message
+//             })
+//     }
+//   }
 }
 
 /**Improve email templates 
  * Add edit profile for user
+ * Convert public_id to Number during image upload nad try that again
  * */ 
+
 
 
