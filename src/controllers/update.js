@@ -70,21 +70,21 @@ import { Op } from 'sequelize';
             const matter = await getMatter(matterId);
             if(matter){
                 matterId = matter.id;
-                let result = await getAllMatterResources(matterId);
+                let [attached_resources] = await getAllMatterResources(matterId);
                 console.log('here', result);
-                if(!result){
-                    return res.status(404).json({
-                        status: 404,
-                        message: 'Here'
-                    });
-                }
-                const resources = result[0].attached_resources;
+                // if(result.length < 0){
+                //     return res.status(404).json({
+                //         status: 404,
+                //         message: 'No resource has been uploaded for this file'
+                //     });
+                // }
+                //const resources = result[0].attached_resources;
                 let updates = await getMatterUpdates(matterId);
                 //console.log('updates', updates);
                 return res.status(200).json({
                     status: 200,
                     updates,
-                    resources
+                    attached_resources 
                 })
             } else {
                 return res.status(404).json({
