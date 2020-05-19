@@ -19,6 +19,7 @@ import { Op } from 'sequelize';
       */
      async addUpdate(req, res){
          console.log(req.authData.payload);
+         return;
          let { matterId } = req.params;
          matterId = convertParamToNumber(matterId);
          try {
