@@ -15,7 +15,7 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
-      updatedId: {
+      updateId: {
         type: Sequelize.INTEGER,
         allowNull: false,
       },

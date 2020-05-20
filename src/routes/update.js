@@ -6,8 +6,7 @@ import { updateController } from '../controllers/update';
 
 
 const { addUpdateValidator } = updateValidator;
-const { addUpdate, getMatterUpdates, getMatters, updateMatter, deleteMatter,
-    uploadMatterResources, getMatterResources, deleteMatterResource
+const { addUpdate, getMatterUpdates, addCommentToUpdate, editUpdate
  } = updateController;
 
 export const updateRouter = express.Router();
@@ -18,6 +17,6 @@ export const updateRouter = express.Router();
 
 updateRouter.post('/matters/:matterId/updates', verifyToken, addUpdateValidator, addUpdate);
 updateRouter.get('/matters/:matterId/updates', verifyToken, getMatterUpdates)
-//matterRouter.get('/matters/:id/uploads', verifyToken, getMatterResources);
-//matterRouter.delete('/matters/:id/uploads/:public_id', verifyToken, verifyAdmin, deleteMatterResource);
+updateRouter.post('/updates/:updateId/comments', verifyToken, addCommentToUpdate);
+updateRouter.put('/updates/:updateId', verifyToken, editUpdate);
 
