@@ -132,7 +132,7 @@ import { Op } from 'sequelize';
       try {
       const update = await getUpdateById(updateId); 
 
-      if(req.authData.payload.id === update.userId){
+      if (req.authData.payload.id === update.userId){
         update.title = req.body.title || update.title;
         update.description = req.body.description || update.description;
         update.updatetype = req.body.updatetype || update.updatetype
@@ -159,28 +159,59 @@ import { Op } from 'sequelize';
           });
       }
   },
+  
+  async deleteUpdate(req, res){
+      let { updateId } = req.params;
+      updateId = convertParamToNumber(updateId);
 
-
-  async getCommentUpdates(req, res){},
-
-  async deleteMatter(req, res){
-      let { id } = req.params;
-      id = convertParamToNumber(id);
-
-      const matter = await getMatter(id);
-      if(matter){
-          await matter.destroy();
+      const update = await getUpdateById(updateId);
+      if(update){
+          await update.destroy();
           return res.status(200).json({
               status: 200,
-              message: 'Matter successfully deleted'
+              message: 'Update successfully deleted'
           });
       } else {
           return res.status(404).json({
               status: 404,
-              message: 'matter not found'
+              message: 'update not found'
           });
       }
-  }
+  },
+
+  async getUpdatePlusAssociatedComments(req, res){
+    let { updateId } = req.params;
+    updateId = convertParamToNumber(updateId);
+
+    try{
+        const Update = await model.Update.findOne({
+            where: {
+                id:updateId
+              },
+              include: [{
+                model: model.Comment,
+                as: 'comments'
+              }]
+        });
+        if(Update){
+            return res.status(200).json({
+                status: 200,
+                Update
+            });
+        } else {
+            return res.status(404).json({
+                status: 404,
+                error: 'Update does not exist'
+            });
+        }
+         
+     } catch(err){
+         return res.status(500).json({
+             status: 500,
+             error: err.message
+         });
+     }
+  },
 }
 
 
