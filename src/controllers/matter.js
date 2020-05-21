@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 //import fs from 'fs';
 import model from '../database/models';
 import { Op } from 'sequelize';
-import { getMatter } from '../services/matter';
+import { getMatter, createMatterResource } from '../services/matter';
 import { getUserById } from '../services/user';
 import { mergeUnique, convertParamToNumber, log } from '../helpers/util';
 //import cloudinary from '../helpers/cloudinary';
@@ -240,8 +240,8 @@ cloudinary.config({
   },
 
   async uploadMatterResources(req, res){
-      //console.log('REQ', req.authData.payload)
-      
+      console.log('FILES', req.files, 'FILE', req.files.image);
+      console.log('ARR', Array.isArray(req.files.image))
     try {
         let id = convertParamToNumber(req.params.id);
         const matter = await getMatter(id);
@@ -251,49 +251,95 @@ cloudinary.config({
                 error: 'Matter you want to upload resource for is not available'
             });
         }
+
         if(!req.files){
             return res.status(400).json({
                 status: 400,
                 error: 'No files attached'
             })
         }
+        
+        // uploading a multiple files
+        if(Array.isArray(req.files.image)) {
+            // uploading multiple files
         const files = req.files.image;
         let uploads = files.map(file => new Promise((resolve, reject) => {
-          cloudinary.uploader.upload(file.tempFilePath, { resource_type: "auto"}, (err, result) =>{
+          cloudinary.uploader.upload(file.tempFilePath, { resource_type: "auto"}, (err, result) => {
               if(err) reject(err);
               else resolve(result);
+
+              const resourceObj = {
+                userId:req.authData.payload.id,
+                matterId:matter.id,
+                attached_resources:result
+            }
+            return createMatterResource(resourceObj).then(resource => res.status(201).json({
+                status: 201,
+                resource
+              })).catch(error => res.status(500).json({
+                status: 500,
+                message: error.message,
+              }));
            })
         })
       )
-        let result = []
+        
       
-            try {
-                result = await Promise.all(uploads)
-                // result.forEach(function (item) {
-                //     console.log('res', result);
-                //     let x = Number(item.public_id);
-                //     console.log('type', typeof x)
-                //     return x;
-                // });
-                //fs.rmdirSync('./tmp', { recursive: true });
-            } catch(err){
-                console.log('err', err);
+        //     try {
+        //         resources = await Promise.all(uploads);
+        //         // result.forEach(function (item) {
+        //         //     console.log('res', result);
+        //         //     let x = Number(item.public_id);
+        //         //     console.log('type', typeof x)
+        //         //     return x;
+        //         // });
+        //         //fs.rmdirSync('./tmp', { recursive: true });
+        //     } catch(err){
+        //         console.log('err', err);
+        //     return res.status(400).json({
+        //         status: 400,
+        //         error: err.message
+        //     });
+        // }
+    }
+
+    else {
+    const file = req.files.image;
+    console.log('fil', file);
+    cloudinary.uploader.upload(file.tempFilePath, { resource_type: "auto"}, (err, result) => {
+        if(err) {
             return res.status(400).json({
                 status: 400,
                 error: err.message
-            });
-        }
+            })
+        } 
+            console.log('RES', result);
+            const resourceObj = {
+                userId:req.authData.payload.id,
+                matterId:matter.id,
+                attached_resources:result
+            }
+            return createMatterResource(resourceObj).then(resource => res.status(201).json({
+                status: 201,
+                resource
+              })).catch(error => res.status(500).json({
+                status: 500,
+                message: error.message,
+              }));
+    });
+}
         
-        const resourceObj = {
-            userId:req.authData.payload.id,
-            matterId:matter.id,
-            attached_resources:result
-        }
-        const newMatterResource = await model.MatterResource.create(resourceObj)
-        return res.status(201).json({
-            status: 201,
-            newMatterResource
-        });
+        
+        // const resourceObj = {
+        //     userId:req.authData.payload.id,
+        //     matterId:matter.id,
+        //     attached_resources:resources
+        // }
+        // const newMatterResource = await model.MatterResource.create(resourceObj)
+        // return res.status(201).json({
+        //     status: 201,
+        //     newMatterResource
+        // });
     } catch(err){
           return res.status(500).json({
               status: 500,

@@ -4,10 +4,11 @@ module.exports = (sequelize, DataTypes) => {
     task_detail: {
       type:DataTypes.TEXT
     },
+    case: DataTypes.STRING,
     due_date: DataTypes.DATE,
     due_time: DataTypes.STRING,
     assignees: {
-      type: DataTypes.ARRAY(DataTypes.STRING),
+      type: DataTypes.ARRAY(DataTypes.INTEGER),
       allownull: true,
       defaultValue: []
     },

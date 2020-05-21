@@ -42,3 +42,11 @@ export const getMatterUpdates = async (matterId) => {
       throw err;
   }
 }
+
+export const createMatterResource = async (obj) => {
+  try {
+    return await model.MatterResource.create(obj);
+  } catch(err) {
+    throw err;
+  }
+}

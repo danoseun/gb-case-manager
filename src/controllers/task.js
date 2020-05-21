@@ -1,5 +1,5 @@
 import model from '../database/models';
-import { getMatter, getAllMatterResources, getMatterUpdates } from '../services/matter';
+import { getMatter } from '../services/matter';
 import { getUpdateById } from '../services/update';
 import { convertParamToNumber } from '../helpers/util';
 import { Op } from 'sequelize';
@@ -10,13 +10,13 @@ import { Op } from 'sequelize';
  * Matter creation object
  */
 
- export const updateController = {
+ export const taskController = {
      /**
       * this functionality allows 
       * assignees/collaborators to 
       * log update on a case
       */
-     async addUpdate(req, res){
+     async addTask(req, res){
          let { matterId } = req.params;
          matterId = convertParamToNumber(matterId);
          try {
@@ -30,18 +30,18 @@ import { Op } from 'sequelize';
           }
 
           if((matter.assignees).includes(req.authData.payload.id)){
-            const updateObj = {
-                title: req.body.title,
-                description: req.body.description,
-                updatetype: req.body.updatetype,
+            const taskObj = {
+                task_detail: req.body.detail,
                 case: matter.title,
-                new_court_date: req.body.new_court_date,
-                staff_name: req.authData.payload.fullname,
+                due_date: req.body.date,
+                due_time: matter.title,
+                assignees: req.body.assignees,
+                status: req.body.status,
                 userId: req.authData.payload.id,
                 matterId: matter.id
             };
 
-            let update = await model.Update.create(updateObj);
+            let task = await model.Update.create(updateObj);
              return res.status(201).json({
                  status: 201,
                  update

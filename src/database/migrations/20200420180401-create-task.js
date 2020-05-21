@@ -8,6 +8,7 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      case: Sequelize.STRING,
       task_detail: {
         type: Sequelize.TEXT
       },
@@ -18,7 +19,7 @@ module.exports = {
         type: Sequelize.STRING
       },
       assignees: {
-        type: Sequelize.ARRAY(Sequelize.STRING),
+        type: Sequelize.ARRAY(Sequelize.INTEGER),
         defaultValue: []
       },
       status: {
