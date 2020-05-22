@@ -8,9 +8,8 @@ module.exports = (sequelize, DataTypes) => {
       type:DataTypes.TEXT
     },
     client: {
-      type:DataTypes.ARRAY(DataTypes.STRING),
-      allownull: true,
-      defaultValue: [] 
+      type:DataTypes.INTEGER,
+      allownull: true 
     },
     start_date: {
       type:DataTypes.DATE

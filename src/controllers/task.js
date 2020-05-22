@@ -13,8 +13,7 @@ import { Op } from 'sequelize';
  export const taskController = {
      /**
       * this functionality allows 
-      * assignees/collaborators to 
-      * log update on a case
+      * staff and admin create tasks
       */
      async addTask(req, res){
          let { matterId } = req.params;
@@ -29,29 +28,23 @@ import { Op } from 'sequelize';
               });
           }
 
-          if((matter.assignees).includes(req.authData.payload.id)){
+          
             const taskObj = {
                 task_detail: req.body.detail,
                 case: matter.title,
                 due_date: req.body.date,
-                due_time: matter.title,
+                due_time: req.body.duetime,
                 assignees: req.body.assignees,
                 status: req.body.status,
                 userId: req.authData.payload.id,
                 matterId: matter.id
             };
 
-            let task = await model.Update.create(updateObj);
+            let task = await model.Task.create(taskObj);
              return res.status(201).json({
                  status: 201,
-                 update
-             });
-          } else {
-              return res.status(403).json({
-                  status: 403,
-                  error: 'You cannot post an update on a case you are not assigned to'
-              })
-          }
+                 task
+             })
          } catch(error){
              return res.status(500).json({
                  status: 500,

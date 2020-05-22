@@ -3,11 +3,12 @@ import dotenv from 'dotenv';
 import model from '../database/models';
 import { Op } from 'sequelize';
 import { getMatter, createMatterResource } from '../services/matter';
+import { getClientById } from '../services/client';
 import { getUserById } from '../services/user';
 import { mergeUnique, convertParamToNumber, log } from '../helpers/util';
 //import cloudinary from '../helpers/cloudinary';
 //import { dataUri } from '../helpers/multer';
-let cloudinary = require('cloudinary').v2;
+import cloudinary from 'cloudinary';
 dotenv.config();
 
 cloudinary.config({
@@ -69,11 +70,17 @@ cloudinary.config({
 
             // filter out instances of null
             let filteredAssignees = newAssignees.filter(function (el) {
-                return el != null;
+                return el !== null;
               });
               
             filteredAssignees.map(el => el.get({ raw: true }));
+              // get client details too
+            let client = await getClientById(matter.client)
+            
             matter.assignees = filteredAssignees;
+
+            //assign client details gotten above
+            matter.client = client;
         
             if(matter){
                 return res.status(200).json({
@@ -240,8 +247,6 @@ cloudinary.config({
   },
 
   async uploadMatterResources(req, res){
-      console.log('FILES', req.files, 'FILE', req.files.image);
-      console.log('ARR', Array.isArray(req.files.image))
     try {
         let id = convertParamToNumber(req.params.id);
         const matter = await getMatter(id);
@@ -259,87 +264,74 @@ cloudinary.config({
             })
         }
         
-        // uploading a multiple files
+        // uploading multiple files
         if(Array.isArray(req.files.image)) {
-            // uploading multiple files
         const files = req.files.image;
-        let uploads = files.map(file => new Promise((resolve, reject) => {
-          cloudinary.uploader.upload(file.tempFilePath, { resource_type: "auto"}, (err, result) => {
-              if(err) reject(err);
-              else resolve(result);
-
-              const resourceObj = {
-                userId:req.authData.payload.id,
-                matterId:matter.id,
-                attached_resources:result
+        files.forEach(file => cloudinary.v2.uploader.upload(file.tempFilePath, { resource_type: "auto"}, async(err, result) => {
+            if(err) {
+                return res.status(400).json({
+                    status: 400,
+                    error: err.message
+                })
+            } else {
+                result.original_filename = file.name;
+                console.log('RES', result);
+                const resourceObj = {
+                  userId:req.authData.payload.id,
+                  matterId:matter.id,
+                  attached_resources:result
+              }
+               try {
+                  const resourceResult = await createMatterResource(resourceObj);
+                  return res.status(201).json({
+                      status: 201,
+                      resourceResult
+                  })
+              } 
+               catch(error){
+                  return res.status(500).json({
+                      status: 500,
+                      error: error.message
+                  })
+              }
             }
-            return createMatterResource(resourceObj).then(resource => res.status(201).json({
-                status: 201,
-                resource
-              })).catch(error => res.status(500).json({
-                status: 500,
-                message: error.message,
-              }));
-           })
         })
       )
-        
-      
-        //     try {
-        //         resources = await Promise.all(uploads);
-        //         // result.forEach(function (item) {
-        //         //     console.log('res', result);
-        //         //     let x = Number(item.public_id);
-        //         //     console.log('type', typeof x)
-        //         //     return x;
-        //         // });
-        //         //fs.rmdirSync('./tmp', { recursive: true });
-        //     } catch(err){
-        //         console.log('err', err);
-        //     return res.status(400).json({
-        //         status: 400,
-        //         error: err.message
-        //     });
-        // }
     }
 
+    // single file upload
     else {
     const file = req.files.image;
     console.log('fil', file);
-    cloudinary.uploader.upload(file.tempFilePath, { resource_type: "auto"}, (err, result) => {
+    cloudinary.v2.uploader.upload(file.tempFilePath, { resource_type: "auto"}, async(err, result) => {
         if(err) {
             return res.status(400).json({
                 status: 400,
                 error: err.message
             })
-        } 
+        }
+            result.original_filename = file.name; 
             console.log('RES', result);
             const resourceObj = {
                 userId:req.authData.payload.id,
                 matterId:matter.id,
                 attached_resources:result
             }
-            return createMatterResource(resourceObj).then(resource => res.status(201).json({
-                status: 201,
-                resource
-              })).catch(error => res.status(500).json({
-                status: 500,
-                message: error.message,
-              }));
+            
+            try {
+                const resourceResult = await createMatterResource(resourceObj);
+                return res.status(201).json({
+                    status: 201,
+                    resourceResult
+                });
+            } catch(error){
+                return res.status(500).json({
+                    status: 500,
+                    error: error.message
+                });
+            }
     });
 }
-        
-        
-        // const resourceObj = {
-        //     userId:req.authData.payload.id,
-        //     matterId:matter.id,
-        //     attached_resources:resources
-        // }
-        // const newMatterResource = await model.MatterResource.create(resourceObj)
-        // return res.status(201).json({
-        //     status: 201,
-        //     newMatterResource
-        // });
     } catch(err){
           return res.status(500).json({
               status: 500,
@@ -377,20 +369,14 @@ cloudinary.config({
 
 
     async deleteMatterResource(req, res){
-        let matterId = convertParamToNumber(req.params.id);
-        let uploadId = convertParamToNumber(req.params.upload_id);
-        let public_id = req.params.public_id;
-        console.log(typeof public_id, public_id);
+        let matterId = convertParamToNumber(req.params.matterId);
+        let id = convertParamToNumber(req.params.id);
+
         try {
             const resource = await model.MatterResource.destroy({
-             //attributes: ['attached_resources'],
              where: {
                 matterId,
-                //id:uploadId,
-                attached_resources:{
-                    //[Op.col]: 'attached_resources.public_id'
-                    [Op.eq]: public_id
-            }
+                id
         }
               })
               console.log('RESOURCE', resource);

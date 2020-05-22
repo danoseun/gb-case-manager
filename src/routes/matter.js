@@ -22,5 +22,5 @@ matterRouter.put('/matters/:id', verifyToken, verifyAdmin, updateMatter);
 matterRouter.delete('/matters/:id', verifyToken, verifyAdmin, deleteMatter);
 matterRouter.post('/matters/:id/uploads', verifyToken, verifyAdmin, fileUpload({useTempFiles: true}), uploadMatterResources);
 matterRouter.get('/matters/:id/uploads', verifyToken, getMatterResources);
-matterRouter.delete('/matters/:id/uploads/:public_id', verifyToken, verifyAdmin, deleteMatterResource);
+matterRouter.delete('/matters/:matterId/uploads/:id', verifyToken, verifyAdmin, deleteMatterResource);
 

@@ -13,7 +13,7 @@ const { addUpdate, getMatterUpdates, addCommentToUpdate, editUpdate,
 export const updateRouter = express.Router();
 
 
-//admin routes
+
 
 
 updateRouter.post('/matters/:matterId/updates', verifyToken, addUpdateValidator, addUpdate);

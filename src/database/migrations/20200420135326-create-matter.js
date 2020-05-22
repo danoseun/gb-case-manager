@@ -15,8 +15,7 @@ module.exports = {
         type: Sequelize.TEXT
       },
       client: {
-        type: Sequelize.ARRAY(Sequelize.STRING),
-        defaultValue: []
+        type: Sequelize.INTEGER
       },
       start_date: {
         type: Sequelize.DATE

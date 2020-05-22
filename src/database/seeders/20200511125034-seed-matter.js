@@ -7,7 +7,7 @@ module.exports = {
       {
         title: 'new title',
         code: 'GH/12/13',
-        client: ['client one'],
+        client: 1,
         start_date: new Date(),
         end_date: new Date(),
         description: 'whatever',
@@ -25,7 +25,7 @@ module.exports = {
       {
         title: 'new title two',
         code: 'GH/12/14',
-        client: ['client two'],
+        client: 2,
         start_date: new Date(),
         end_date: new Date(),
         description: 'whatever',
@@ -43,7 +43,7 @@ module.exports = {
       {
         title: 'new title three',
         code: 'GH/12/15',
-        client: ['client three'],
+        client: 3,
         start_date: new Date(),
         end_date: new Date(),
         description: 'whatever',
@@ -61,7 +61,7 @@ module.exports = {
       {
         title: 'another new title',
         code: 'GH/12/17',
-        client: ['client four'],
+        client: 1,
         start_date: new Date(),
         end_date: new Date(),
         description: 'whatever',

@@ -1,5 +1,6 @@
 import model from '../database/models';
 
+
 /** get single matter on 
    * the application
    */
@@ -43,10 +44,15 @@ export const getMatterUpdates = async (matterId) => {
   }
 }
 
+/**
+ * Service for creating matter resources
+ */
 export const createMatterResource = async (obj) => {
   try {
-    return await model.MatterResource.create(obj);
+    const val = await model.MatterResource.create(obj);
+    return val;
   } catch(err) {
     throw err;
   }
 }
+

@@ -6,7 +6,7 @@ import bodyParser from 'body-parser';
 import redis from 'redis';
 import {
    userRouter, matterRouter, clientRouter, matterTypeRouter,
-   updateRouter
+   updateRouter, taskRouter
  } from '../src/routes';
 
  
@@ -38,6 +38,7 @@ app.use(matterRouter);
 app.use(clientRouter);
 app.use(matterTypeRouter);
 app.use(updateRouter);
+app.use(taskRouter);
 
 
 
