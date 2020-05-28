@@ -18,12 +18,13 @@ module.exports = {
       due_time: {
         type: Sequelize.STRING
       },
-      assignees: {
-        type: Sequelize.ARRAY(Sequelize.INTEGER),
-        defaultValue: []
+      assignee: {
+        type: Sequelize.INTEGER,
+        allowNull: false
       },
-      status: {
-        type: Sequelize.ENUM('to-do','in-progress', 'completed')
+      status:{
+        type: Sequelize.ENUM,
+        values: ['to-do','in-progress', 'completed']
       },
       userId: {
         type: Sequelize.INTEGER,

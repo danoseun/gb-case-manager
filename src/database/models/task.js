@@ -7,13 +7,12 @@ module.exports = (sequelize, DataTypes) => {
     case: DataTypes.STRING,
     due_date: DataTypes.DATE,
     due_time: DataTypes.STRING,
-    assignees: {
-      type: DataTypes.ARRAY(DataTypes.INTEGER),
-      allownull: true,
-      defaultValue: []
+    assignee: {
+      type: DataTypes.INTEGER
     },
     status:{
-      type: DataTypes.ENUM('to-do','in-progress', 'completed')
+      type: DataTypes.ENUM,
+      values: ['to-do','in-progress', 'completed']
     },
     userId: {
       type: DataTypes.INTEGER,

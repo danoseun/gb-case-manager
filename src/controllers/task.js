@@ -1,9 +1,9 @@
+import sequelize from 'sequelize';
 import model from '../database/models';
 import { getMatter } from '../services/matter';
 import { getUpdateById } from '../services/update';
 import { convertParamToNumber } from '../helpers/util';
 import { Op } from 'sequelize';
-
 
 
 /**
@@ -34,7 +34,7 @@ import { Op } from 'sequelize';
                 case: matter.title,
                 due_date: req.body.date,
                 due_time: req.body.duetime,
-                assignees: req.body.assignees,
+                assignee: req.body.assignee,
                 status: req.body.status,
                 userId: req.authData.payload.id,
                 matterId: matter.id
@@ -53,28 +53,202 @@ import { Op } from 'sequelize';
          }
      },
 
-     async getMatterUpdates(req, res){
-        let { matterId } = req.params;
-        matterId = convertParamToNumber(matterId);
+     /**
+      * View all tasks
+      */
+     async getAllTasks(req, res){
+        let { id, role } = req.authData.payload;
+        let { offset, limit, order, sort, today, status, sevendays, casename } = req.query;
 
         try {
-            const matter = await getMatter(matterId);
-            if(matter){
-                matterId = matter.id;
-                let [attached_resources] = await getAllMatterResources(matterId);
-                let updates = await getMatterUpdates(matterId);
-                //console.log('updates', updates);
-                return res.status(200).json({
-                    status: 200,
-                    updates,
-                    attached_resources 
-                })
-            } else {
-                return res.status(404).json({
-                    status: 404,
-                    error: 'Matter'
-                })
+            if(role === 'admin') {
+
+                 if(today){
+                    //  console.log('t', today);
+                    //  let todayDate = JSON.stringify(new Date()).split('T')[0];
+                    //  console.log(todayDate);
+                    //  todayDate = todayDate.replace('"', '');
+                    //  console.log('2', todayDate);
+                    const data = await model.Task.findAndCountAll({
+                    attributes: { exclude: ['assignee'] },
+                    where: sequelize.where(sequelize.fn('date', sequelize.col('due_date')), '=', today), 
+                    order: [[sort || "updatedAt", order || "DESC"]],
+                    offset,
+                    limit
+                  });
+                  return res.status(200).json({ data: data.rows, offset, limit, total: data.count });
+               }
+
+               if(status){
+                const data = await model.Task.findAndCountAll({
+                attributes: { exclude: ['assignee'] },
+                where: { 
+                    status:{
+                        [Op.eq]: `${status}`
+                }
+             }, 
+                order: [[sort || "updatedAt", order || "DESC"]],
+                offset,
+                limit
+              });
+              return res.status(200).json({ data: data.rows, offset, limit, total: data.count });
+           }
+            
+           
+               if(sevendays){
+                 // my implementation  
+                // let days = new Date();
+                // days.setDate(days.getDate() + 7);
+                // days = JSON.stringify(days).split('T')[0];
+                // days = days.replace('"', '');
+                let days = new Date(sevendays);
+                days.setDate(days.getDate() + 7); //add number of days
+                let newDate = days.toISOString().substr(0,10);
+                console.log('HERE', newDate);
+                const data = await model.Task.findAndCountAll({
+                    attributes: { exclude: ['assignee'] },
+                    where: sequelize.where(sequelize.fn('date', sequelize.col('due_date')), '=', newDate),
+                    order: [[sort || "updatedAt", order || "DESC"]],
+                    offset,
+                    limit
+                  });
+                  return res.status(200).json({ data: data.rows, offset, limit, total: data.count });
             }
+
+              if(casename){
+                const data = await model.Task.findAndCountAll({
+                    attributes: { exclude: ['assignee'] },
+                    where: { 
+                        case:{
+                            [Op.iLike]: `%${casename}%`
+                    }
+                }, 
+                    order: [[sort || "updatedAt", order || "DESC"]],
+                    offset,
+                    limit
+                  });
+                  return res.status(200).json({ data: data.rows, offset, limit, total: data.count });
+             }
+
+             else {
+                let userTasks = await model.Task.findAll({ 
+                attributes: { exclude: ['assignee'] }
+            }).map(el => el.get({ raw: true }));
+                if(userTasks){
+                    return res.status(200).json({
+                        status: 200,
+                        userTasks
+                    })
+                } else {
+                    return res.status(404).json({
+                        status: 404,
+                        error: 'No tasks available'
+                    })
+                 }
+               }
+             }
+             
+             // users other than admin
+             else {
+                if(today){
+                    const data = await model.Task.findAndCountAll({
+                    attributes: { exclude: ['assignee'] },
+                    where: {
+                        [Op.and]: sequelize.where(sequelize.fn('date', sequelize.col('due_date')), '=', today), 
+                        assignee: {[Op.eq]: id}
+                     }, 
+                    order: [[sort || "updatedAt", order || "DESC"]],
+                    offset,
+                    limit
+                  });
+                  return res.status(200).json({ data: data.rows, offset, limit, total: data.count });
+               }
+
+               if(status){
+                const data = await model.Task.findAndCountAll({
+                attributes: { exclude: ['assignee'] },
+                where: { 
+                    [Op.and]:[{
+                    status:{
+                        [Op.eq]: `${status}`
+                }
+              },{
+                    assignee:{
+                        [Op.eq]: id
+                }
+               }]
+             }, 
+                order: [[sort || "updatedAt", order || "DESC"]],
+                offset,
+                limit
+              });
+              return res.status(200).json({ data: data.rows, offset, limit, total: data.count });
+           }
+
+               
+           
+             if(sevendays){
+                 let days = new Date(sevendays);
+                 //add 7 days to the entered date
+                 days.setDate(days.getDate() + 7); 
+                 let newDate = days.toISOString().substr(0,10);
+                 console.log('HERE', newDate);
+                 const data = await model.Task.findAndCountAll({
+                 attributes: { exclude: ['assignee'] },
+                 where: {
+                    [Op.and]: sequelize.where(sequelize.fn('date', sequelize.col('due_date')), '=', newDate), 
+                    assignee: {[Op.eq]: id}
+                 }, 
+                 order: [[sort || "updatedAt", order || "DESC"]],
+                 offset,
+                 limit
+              });
+              return res.status(200).json({ data: data.rows, offset, limit, total: data.count });
+           }
+
+            if(casename){
+              const data = await model.Task.findAndCountAll({
+                attributes: { exclude: ['assignee'] },
+                where: {
+                    [Op.and]:[{ 
+                    case:{
+                        [Op.iLike]: `%${casename}%`
+                }
+            },{
+                    assignee:{
+                        [Op.eq]: id
+                }
+            }]
+            }, 
+                order: [[sort || "updatedAt", order || "DESC"]],
+                offset,
+                limit
+              });
+              return res.status(200).json({ data: data.rows, offset, limit, total: data.count });
+         }
+
+          else {
+               let userTasks = await model.Task.findAll({ 
+                   attributes: { exclude: ['assignee'] },
+                   where: { 
+                       assignee:{
+                           [Op.eq]: id
+                   }
+               }
+           }).map(el => el.get({ raw: true }));
+               if(userTasks){
+                   return res.status(200).json({
+                       status: 200,
+                       userTasks
+                   })
+               } else {
+                   return res.status(404).json({
+                       status: 404,
+                       error: 'You have no tasks yet'
+                   })
+                }
+              }
+             }   
         } catch(error){
             return res.status(500).json({
                 status: 500,
@@ -207,5 +381,31 @@ import { Op } from 'sequelize';
 
 
 
+exports.findAll = (req, res) => {
+    const title = req.query.title;
+    const description = req.query.description;
+    Tutorial.findAll({
+            where: {
+                [Op.or]: [{
+                        title: {
+                            [Op.like]: `%${title}%`
+                        }
+                    },
+                    {
+                        description: {
+                            [Op.like]: `%${description}%`
+                        }
+                    }
+                ]
+            }
+        })
+        .then(data => {
+            res.send(data);
+        })
+        .catch(err => {
+            res.status(500).send({
+                message: err.message || "Some error occurred while retrieving tutorials."
+            });
+        });
 
-
+};

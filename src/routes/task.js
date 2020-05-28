@@ -5,12 +5,13 @@ import { taskController } from '../controllers/task';
 
 
 
-const { addTask } = taskController;
+const { addTask, getAllTasks } = taskController;
 
 export const taskRouter = express.Router();
 
 
 
 taskRouter.post('/matters/:matterId/tasks', verifyToken, addTask);
+taskRouter.get('/tasks', verifyToken, getAllTasks)
 
 
