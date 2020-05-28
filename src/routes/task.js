@@ -12,6 +12,6 @@ export const taskRouter = express.Router();
 
 
 taskRouter.post('/matters/:matterId/tasks', verifyToken, addTask);
-taskRouter.get('/tasks', verifyToken, getAllTasks)
+taskRouter.get('/tasks', verifyToken, getAllTasks);
 
 
