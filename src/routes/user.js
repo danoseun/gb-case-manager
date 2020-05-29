@@ -8,7 +8,7 @@ const { addUserValidator, loginUserValidator } = userValidator;
 const { addUser,loginUser,
     loginAdmin, adminVerification, 
     resetPassword, receiveNewPassword, 
-    adminGetAllUsers, adminUpdateUserProfile,
+    adminGetAllUsers, updateUserProfile,
     adminDeleteUser
  } = userContoller;
 
@@ -23,5 +23,5 @@ userRouter.patch('/password/reset/:token', receiveNewPassword);
 userRouter.post('/admin/verify', adminVerification);
 userRouter.post('/register', verifyToken, verifyAdmin, addUserValidator, addUser);
 userRouter.get('/users', verifyToken, verifyAdmin, adminGetAllUsers);
-userRouter.put('/users/:id', verifyToken, verifyAdmin, adminUpdateUserProfile);
+userRouter.put('/users/:id', verifyToken, updateUserProfile);
 userRouter.delete('/users/:id', verifyToken, verifyAdmin, adminDeleteUser);

@@ -263,33 +263,42 @@ async adminGetAllUsers(req, res) {
   },
 
   /**
-   * admins can update user profile 
+   * admins can update user profile
+   * staff can also update their profile 
    * 
    */
-  async adminUpdateUserProfile(req, res){
+  async updateUserProfile(req, res){
     let id = convertParamToNumber(req.params.id);
       try {
           const user = await getUserById(id)
-          if(!user){
-              return res.status(404).json({
-                  status: 400,
-                  error: 'There wan an error retrieving this user'
-              });
+          // admins can edit user profile while the staff can edit their own profile
+          if(req.authData.payload.role === 'admin' || (req.authData.payload.id === user.id)) {
+            if(!user){
+                return res.status(404).json({
+                    status: 404,
+                    error: 'This user does not exist'
+                });
+            }
+            else {
+                user.role = req.body.role || user.role;
+                user.firstname = req.body.firstname ? req.body.firstname.trim() : user.firstname;
+                user.lastname = req.body.lastname ? req.body.lastname.trim() : user.lastname;
+                user.fullname = `${user.firstname} ${user.lastname}`
+                user.branch = req.body.branch || user.branch;
+                const val = await user.save();
+  
+                return res.status(200).json({
+                    status: 200,
+                    val,
+                    message: 'profile change successful'
+                })
+            }
           }
-          else {
-              user.role = req.body.role || user.role;
-              user.firstname = req.body.firstname ? req.body.firstname.trim() : user.firstname;
-              user.lastname = req.body.lastname ? req.body.lastname.trim() : user.lastname;
-              user.fullname = `${user.firstname} ${user.lastname}`
-              user.branch = req.body.branch || user.branch;
-              const val = await user.save();
-
-              return res.status(200).json({
-                  status: 200,
-                  val,
-                  message: 'profile change successful'
-              })
-          }
+          return res.status(403).json({
+              status:403,
+              error: 'You are not authorized to carry out this action'
+          });
+          
       }
       catch(error){
           return res.status(500).json({

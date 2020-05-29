@@ -68,7 +68,7 @@ cloudinary.config({
             let newAssignees;
             newAssignees = await Promise.all(newArr.map(id => getUserById(id)));
 
-            // filter out instances of null
+            // filter out instances of null(null occurs when a user has been deleted from the db)
             let filteredAssignees = newAssignees.filter(function (el) {
                 return el !== null;
               });
@@ -302,7 +302,6 @@ cloudinary.config({
     // single file upload
     else {
     const file = req.files.image;
-    console.log('fil', file);
     cloudinary.v2.uploader.upload(file.tempFilePath, { resource_type: "auto"}, async(err, result) => {
         if(err) {
             return res.status(400).json({
@@ -311,7 +310,6 @@ cloudinary.config({
             })
         }
             result.original_filename = file.name; 
-            console.log('RES', result);
             const resourceObj = {
                 userId:req.authData.payload.id,
                 matterId:matter.id,
@@ -392,12 +390,7 @@ cloudinary.config({
             })
     }
   }
-}
-
-/**Improve email templates 
- * Add edit profile for user
- * Convert public_id to Number during image upload nad try that again
- * */ 
+} 
 
 
 
