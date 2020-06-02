@@ -7,7 +7,7 @@ import { getTaskById } from '../services/task';
 import { convertParamToNumber } from '../helpers/util';
 import { Op } from 'sequelize';
 import { getUserById, getAllAdmins } from '../services/user';
-import { scheduleJob } from '../helpers/queue';
+//import { scheduleJob } from '../helpers/queue';
 require('../helpers/processqueue');
 import sgMail from '@sendgrid/mail'
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
@@ -70,18 +70,18 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
                 console.log(error);
               });
 
-                // Schedule Job to send email 24hrs before task due date
-                args = {
-                  jobName: "sendEmail",
-                  time: (req.body.start_time - 10 * 60) * 1000, // (Start time - 10 minutes) in millieconds
-                  params: {
-                  to:'',
-                  from: 'Ghalib Chambers Notifications <oluwaseun@asb.ng>',
-                  subject: 'Task due date Reminder',
-                  html: 'This is a reminder that your task will be due 24hrs from now.'
-                  }
-                };
-                scheduleJob(args);
+                // // Schedule Job to send email 24hrs before task due date
+                // args = {
+                //   jobName: "sendEmail",
+                //   time: (req.body.start_time - 10 * 60) * 1000, // (Start time - 10 minutes) in millieconds
+                //   params: {
+                //   to:'',
+                //   from: 'Ghalib Chambers Notifications <oluwaseun@asb.ng>',
+                //   subject: 'Task due date Reminder',
+                //   html: 'This is a reminder that your task will be due 24hrs from now.'
+                //   }
+                // };
+                // scheduleJob(args);
 
              return res.status(201).json({
                  status: 201,
