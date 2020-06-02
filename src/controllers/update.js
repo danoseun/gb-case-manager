@@ -1,8 +1,12 @@
+import 'dotenv/config';
 import model from '../database/models';
 import { getMatter, getAllMatterResources, getMatterUpdates } from '../services/matter';
 import { getUpdateById } from '../services/update';
-import { convertParamToNumber } from '../helpers/util';
+import { getUserById, getAllAdmins } from '../services/user';
+import { mergeUnique, convertParamToNumber } from '../helpers/util';
 import { Op } from 'sequelize';
+import sgMail from '@sendgrid/mail'
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 
 
@@ -14,7 +18,7 @@ import { Op } from 'sequelize';
      /**
       * this functionality allows 
       * assignees/collaborators to 
-      * log update on a case
+      * log update(s) on a case
       */
      async addUpdate(req, res){
          let { matterId } = req.params;
@@ -42,6 +46,45 @@ import { Op } from 'sequelize';
             };
 
             let update = await model.Update.create(updateObj);
+            const url = `https://ghalibchambers/updates/${update.id}`
+
+            let admins = await getAllAdmins();
+
+            // fetch only emails of the admin
+            let adminEmails = admins.map(admin => admin.email);
+
+            //convert IDs to number if they are not numbers
+            let newArr = matter.assignees.map(id => Number(id));
+            
+            //get the details of each assignee
+            let newAssignees;
+            newAssignees = await Promise.all(newArr.map(id => getUserById(id)));
+
+            // filter out instances of null(null occurs when a user has been deleted from the db)
+            let filteredAssignees = newAssignees.filter(function (el) {
+                return el !== null;
+              });
+              
+            // get a pure array of user objects  
+            filteredAssignees.map(el => el.get({ raw: true }));
+            
+            // get emails of assignees
+            let assigneeEmails = filteredAssignees.map(assignee => assignee.email);
+            const emails = mergeUnique(adminEmails, assigneeEmails);
+            
+            const msg = {
+                to: emails,
+                from: 'Ghalib Chambers Notifications <oluwaseun@asb.ng>',
+                subject: '🍩 A new update has just been logged on a matter. 🍩',
+                html: `<p>Checkout this newly logged update <a href=${url}>${url} for ${matter.title}</a> </p>`,
+              };
+
+              sgMail.sendMultiple(msg).then(() => {
+                console.log('emails sent successfully!');
+              }).catch(error => {
+                console.log(error);
+              });
+
              return res.status(201).json({
                  status: 201,
                  update
@@ -186,10 +229,16 @@ import { Op } from 'sequelize';
             where: {
                 id:updateId
               },
-              include: [{
-                model: model.Comment,
-                as: 'comments'
-              }]
+              include: [
+                  {
+                    model: model.Comment,
+                    as: 'comments'
+                  },
+                  {
+                    model: model.User,
+                    as: 'author'
+                  }
+            ]
         });
         if(Update){
             return res.status(200).json({

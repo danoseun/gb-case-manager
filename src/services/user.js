@@ -1,6 +1,6 @@
 import model from '../database/models'
 import sgMail from '@sendgrid/mail';
-import jwt from 'jsonwebtoken';
+//import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -33,7 +33,7 @@ export const registerEmailTemplate = (adminName, userObject, loginurl) => {
     const subject = 'Invitation to Join Ghalib Chambers Platform';
     const html = `
     <p>${adminName} has invited you to join the Ghalib Chambers Case Management Portal.</p>
-    <p>Here are your login details, email:${userObject.email} and password:${userObject.password}</p>
+    <p>Here are your login details, ${userObject.email} and ${userObject.password}</p>
     <p>Login at <a href=${loginurl}>${loginurl}</a> with the above details after which we strongly recommend you change your password afterwards.</p>
     <p>Ghalib Chambers.</p>
     `;
@@ -93,6 +93,19 @@ export const updatePassword = async (password,hash, email) => {
           },
           where: { id } });
         return User;
+      } catch (error) {
+        throw error;
+      }
+  }
+
+  /**
+   * get all admins on the app
+   */
+
+  export const getAllAdmins = async () => {
+    try {
+        const admins = await model.User.findAll({ where: { role: 'admin' } }).map(el => el.get({ raw: true }));
+        return admins;
       } catch (error) {
         throw error;
       }

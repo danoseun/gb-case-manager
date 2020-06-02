@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import sequelize from 'sequelize';
 import model from '../database/models';
 import { getMatter } from '../services/matter';
@@ -5,11 +6,15 @@ import { getUpdateById } from '../services/update';
 import { getTaskById } from '../services/task';
 import { convertParamToNumber } from '../helpers/util';
 import { Op } from 'sequelize';
-import { getUserById } from '../services/user';
+import { getUserById, getAllAdmins } from '../services/user';
+import { scheduleJob } from '../helpers/queue';
+require('../helpers/processqueue');
+import sgMail from '@sendgrid/mail'
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 
 /**
- * Matter creation object
+ * Task creation object
  */
 
  export const taskController = {
@@ -43,6 +48,41 @@ import { getUserById } from '../services/user';
             };
 
             let task = await model.Task.create(taskObj);
+            const url = `https://ghalibchambers/tasks/${task.id}`
+            let admins = await getAllAdmins();
+
+            let emails = admins.map(admin => admin.email);
+        
+            let assigned = await getUserById(task.assignee);
+            
+            emails.push(assigned.email);
+            
+            const msg = {
+                to: emails,
+                from: 'Ghalib Chambers Notifications <oluwaseun@asb.ng>',
+                subject: '🍩 A new task has just been created. 🍩',
+                html: `<p>Checkout this newly created task <a href=${url}>${url}</a> </p>`,
+              };
+
+              sgMail.sendMultiple(msg).then(() => {
+                console.log('emails sent successfully!');
+              }).catch(error => {
+                console.log(error);
+              });
+
+                // Schedule Job to send email 24hrs before task due date
+                args = {
+                  jobName: "sendEmail",
+                  time: (req.body.start_time - 10 * 60) * 1000, // (Start time - 10 minutes) in millieconds
+                  params: {
+                  to:'',
+                  from: 'Ghalib Chambers Notifications <oluwaseun@asb.ng>',
+                  subject: 'Task due date Reminder',
+                  html: 'This is a reminder that your task will be due 24hrs from now.'
+                  }
+                };
+                scheduleJob(args);
+
              return res.status(201).json({
                  status: 201,
                  task

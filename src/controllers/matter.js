@@ -44,6 +44,44 @@ cloudinary.config({
          };
          try {
              let matter = await model.Matter.create(matterObj);
+             const url = `https://ghalibchambers/updates/${update.id}`
+
+             let admins = await getAllAdmins();
+ 
+             // fetch only emails of the admins
+             let adminEmails = admins.map(admin => admin.email);
+ 
+             //convert IDs to numbers if they are not numbers
+             let newArr = matter.assignees.map(id => Number(id));
+             
+             //get the details of each assignee
+             let newAssignees;
+             newAssignees = await Promise.all(newArr.map(id => getUserById(id)));
+ 
+             // filter out instances of null(null occurs when a user has been deleted from the db)
+             let filteredAssignees = newAssignees.filter(function (el) {
+                 return el !== null;
+               });
+               
+             // get a pure array of user objects  
+             filteredAssignees.map(el => el.get({ raw: true }));
+            
+             // get emails of assignees
+             let assigneeEmails = filteredAssignees.map(assignee => assignee.email);
+             const emails = mergeUnique(adminEmails, assigneeEmails);
+             
+             const msg = {
+                 to: emails,
+                 from: 'Ghalib Chambers Notifications <oluwaseun@asb.ng>',
+                 subject: '🍩 A new matter has just been created. 🍩',
+                 html: `<p>A matter with title ${matter.title} has just been created <a href=${url}>${url}</a> </p>`,
+               };
+ 
+               sgMail.sendMultiple(msg).then(() => {
+                 console.log('emails sent successfully!');
+               }).catch(error => {
+                 console.log(error);
+               });
              return res.status(201).json({
                  status: 201,
                  matter
