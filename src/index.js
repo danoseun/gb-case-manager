@@ -36,7 +36,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const port = process.env.PORT || 1600;
 
 //invoke cronjob
-const job = new CronJob('00 10 19 * * 1-5', function() {
+const job = new CronJob('00 25 19 * * 1-5', function() {
 	taskController.taskReminder();
 });
 job.start();
