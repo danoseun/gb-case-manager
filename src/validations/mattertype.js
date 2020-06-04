@@ -3,10 +3,10 @@ import model from '../database/models';
 
 
 /**
- * Validates updatetype property during creation
+ * Validates mattertype property during creation
  */
-export const updateTypeValidator = {
-   async addUpdateTypeValidator(req, res, next){
+export const matterTypeValidator = {
+   async addMatterTypeValidator(req, res, next){
     let { name } = req.body;
 
     const rules = {
@@ -24,15 +24,15 @@ export const updateTypeValidator = {
     name = name.trim();
 
     try {
-        const updatetype  = await model.UpdateType.findOne({ where: { name } });
+        const mattertype  = await model.MatterType.findOne({ where: { name } });
        
-        if(updatetype === null || updatetype === undefined){
+        if(mattertype === null || mattertype === undefined){
             req.body.name = name;
             return next();
         } else {
             return res.status(400).json({
                 status: 400,
-                error: 'Seems like you have created an update type with similar name before'
+                error: 'Seems like you have created an matter type with similar name before'
             });
         }
         

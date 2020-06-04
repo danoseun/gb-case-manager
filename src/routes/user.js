@@ -26,4 +26,3 @@ userRouter.post('/register', verifyToken, verifyAdmin, addUserValidator, addUser
 userRouter.get('/users', verifyToken, verifyAdmin, adminGetAllUsers);
 userRouter.put('/users/:id', verifyToken, updateUserProfile);
 userRouter.delete('/users/:id', verifyToken, verifyAdmin, adminDeleteUser);
-userRouter.get('/here', getAllAdmins)

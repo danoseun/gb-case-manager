@@ -4,9 +4,11 @@ import express from 'express';
 import logger from 'morgan';
 import bodyParser from 'body-parser';
 import redis from 'redis';
+import { CronJob } from 'cron';
+import { taskController } from '../src/controllers/task';
 import {
    userRouter, matterRouter, clientRouter, matterTypeRouter,
-   updateRouter, taskRouter
+   updateRouter, taskRouter, updateTypeRouter
  } from '../src/routes';
 
  
@@ -33,10 +35,17 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 const port = process.env.PORT || 1600;
 
+//invoke cronjob
+const job = new CronJob('00 10 19 * * 1-5', function() {
+	taskController.taskReminder();
+});
+job.start();
+
 app.use(userRouter);
 app.use(matterRouter);
 app.use(clientRouter);
 app.use(matterTypeRouter);
+app.use(updateTypeRouter);
 app.use(updateRouter);
 app.use(taskRouter);
 

@@ -7,8 +7,6 @@ import { getTaskById } from '../services/task';
 import { convertParamToNumber } from '../helpers/util';
 import { Op } from 'sequelize';
 import { getUserById, getAllAdmins } from '../services/user';
-//import { scheduleJob } from '../helpers/queue';
-require('../helpers/processqueue');
 import sgMail from '@sendgrid/mail'
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
@@ -69,19 +67,6 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
               }).catch(error => {
                 console.log(error);
               });
-
-                // // Schedule Job to send email 24hrs before task due date
-                // args = {
-                //   jobName: "sendEmail",
-                //   time: (req.body.start_time - 10 * 60) * 1000, // (Start time - 10 minutes) in millieconds
-                //   params: {
-                //   to:'',
-                //   from: 'Ghalib Chambers Notifications <oluwaseun@asb.ng>',
-                //   subject: 'Task due date Reminder',
-                //   html: 'This is a reminder that your task will be due 24hrs from now.'
-                //   }
-                // };
-                // scheduleJob(args);
 
              return res.status(201).json({
                  status: 201,
@@ -165,9 +150,12 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
              }
 
              else {
-                let userTasks = await model.Task.findAll({ 
-                attributes: { exclude: ['assignee'] }
-            }).map(el => el.get({ raw: true }));
+                let userTasks = await model.Task.findAndCountAll({ 
+                attributes: { exclude: ['assignee'] },
+                order: [[sort || "updatedAt", order || "DESC"]],
+                offset,
+                limit
+            })
                 if(userTasks){
                     return res.status(200).json({
                         status: 200,
@@ -261,14 +249,17 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
          }
 
           else {
-               let userTasks = await model.Task.findAll({ 
+               let userTasks = await model.Task.findAndCountAll({ 
                    attributes: { exclude: ['assignee'] },
                    where: { 
                        assignee:{
                            [Op.eq]: id
                    }
-               }
-           }).map(el => el.get({ raw: true }));
+               },
+               order: [[sort || "updatedAt", order || "DESC"]],
+                offset,
+                limit
+           })
                if(userTasks){
                    return res.status(200).json({
                        status: 200,
@@ -344,6 +335,53 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
                 status: 500,
                 error: error.message
             });
+        }
+    },
+
+    /**
+     * This function hunts for tasks
+     * that reminders need to be sent for
+     */
+    async taskReminder(){
+        var now = new Date();
+        now.setDate(now.getDate()+1);
+        //console.log('D', now);
+        const dueTasks = await model.Task.findAll({
+            where: {
+                [Op.and]: sequelize.where(sequelize.fn('date', sequelize.col('due_date')), '=', now),
+                [Op.or]: [{status: 'to-do'}, {status: 'in-progress'}]
+            }
+        }).map(el => el.get({ raw: true }));
+        //console.log('HERE', dueTasks);
+        if(dueTasks.length > 0){
+            let values = dueTasks.map(({task_detail, assignee}) => ({task_detail, assignee}));
+            //console.log('values', values);
+            let assignees = await Promise.all(values.map(value => getUserById(value.assignee)));
+            //console.log('users', assignees);
+
+            // filter out instances of null(null occurs when a user has been deleted from the db)
+            let filteredAssignees = assignees.filter(function (el) {
+                return el !== null;
+              });
+           // get a pure array of user objects
+            filteredAssignees.map(el => el.get({ raw: true }));
+            //console.log('filt', filteredAssignees);
+            // return list of user emails
+            let emails = filteredAssignees.map(user => user.email);
+            console.log('emails', emails);
+
+            const msg = {
+                to: emails,
+                from: 'Ghalib Chambers Notifications <oluwaseun@asb.ng>',
+                subject: '🍩 Your task is due tomorrow. 🍩',
+                html: `<p>Task is due tommorow</p>`,
+              };
+
+              sgMail.sendMultiple(msg).then(() => {
+                console.log('emails sent successfully!');
+              }).catch(error => {
+                console.log(error);
+              });
         }
     }
 }
