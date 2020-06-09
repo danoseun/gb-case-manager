@@ -5,6 +5,7 @@ import { matterTypeRouter } from './mattertype';
 import { updateTypeRouter } from './updatetype';
 import { updateRouter } from './update';
 import { taskRouter } from './task';
+import { eventRouter } from './event';
 
 export {
     userRouter,
@@ -13,5 +14,6 @@ export {
     matterTypeRouter,
     updateTypeRouter,
     updateRouter,
-    taskRouter
+    taskRouter,
+    eventRouter
 }

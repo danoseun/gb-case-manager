@@ -8,7 +8,7 @@ import { CronJob } from 'cron';
 import { taskController } from '../src/controllers/task';
 import {
    userRouter, matterRouter, clientRouter, matterTypeRouter,
-   updateRouter, taskRouter, updateTypeRouter
+   updateRouter, taskRouter, updateTypeRouter, eventRouter
  } from '../src/routes';
 
  
@@ -48,6 +48,7 @@ app.use(matterTypeRouter);
 app.use(updateTypeRouter);
 app.use(updateRouter);
 app.use(taskRouter);
+app.use(eventRouter);
 
 
 

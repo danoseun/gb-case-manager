@@ -88,6 +88,8 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
      async getAllTasks(req, res){
         let { id, role } = req.authData.payload;
         let { offset, limit, order, sort, today, status, sevendays, casename } = req.query;
+        offset = offset ? Number(offset) : 0;
+        limit = limit ? Number(limit) : 10;
 
         try {
             if(role === 'admin') {

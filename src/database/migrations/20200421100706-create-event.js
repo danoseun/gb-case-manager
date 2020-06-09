@@ -17,9 +17,8 @@ module.exports = {
       date: {
         type: Sequelize.DATE
       },
-      employees_assigned: {
-        type: Sequelize.ARRAY(Sequelize.STRING),
-        defaultValue: []
+      employee_assigned: {
+        type: Sequelize.INTEGER
       },
       userId: {
         type: Sequelize.INTEGER,

@@ -142,8 +142,8 @@ cloudinary.config({
     async getMatters(req, res){
     
         let { offset, limit, order, sort, ...rest } = req.query;
-        offset = offset ? parseInt(offset) : 0;
-        limit = limit ? parseInt(limit) : 10;
+        offset = offset ? Number(offset) : 0;
+        limit = limit ? Number(limit) : 10;
         let options = {};
     
         if (Object.keys(rest).length) {

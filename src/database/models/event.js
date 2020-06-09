@@ -4,10 +4,8 @@ module.exports = (sequelize, DataTypes) => {
     name: DataTypes.TEXT,
     venue: DataTypes.TEXT,
     date: DataTypes.DATE,
-    employees_assigned: {
-      type: DataTypes.ARRAY(DataTypes.STRING),
-      allownull: true,
-      defaultValue: [] 
+    employee_assigned: {
+      type: DataTypes.INTEGER
     },
     userId: {
       type:DataTypes.INTEGER,
