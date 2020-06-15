@@ -44,7 +44,7 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
                 userId: req.authData.payload.id,
                 matterId: matter.id
             };
-
+            
             let task = await model.Task.create(taskObj);
             const url = `https://ghalibchambers/tasks/${task.id}`
             let admins = await getAllAdmins();
@@ -62,11 +62,11 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
                 html: `<p>Checkout this newly created task <a href=${url}>${url}</a> </p>`,
               };
 
-              sgMail.sendMultiple(msg).then(() => {
-                console.log('emails sent successfully!');
-              }).catch(error => {
-                console.log(error);
-              });
+            //   sgMail.sendMultiple(msg).then(() => {
+            //     console.log('emails sent successfully!');
+            //   }).catch(error => {
+            //     console.log(error);
+            //   });
 
              return res.status(201).json({
                  status: 201,

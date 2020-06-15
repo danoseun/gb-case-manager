@@ -77,11 +77,11 @@ cloudinary.config({
                  html: `<p>A matter with title ${matter.title} has just been created <a href=${url}>${url}</a> </p>`,
                };
  
-               sgMail.sendMultiple(msg).then(() => {
-                 console.log('emails sent successfully!');
-               }).catch(error => {
-                 console.log(error);
-               });
+            //    sgMail.sendMultiple(msg).then(() => {
+            //      console.log('emails sent successfully!');
+            //    }).catch(error => {
+            //      console.log(error);
+            //    });
              return res.status(201).json({
                  status: 201,
                  matter

@@ -79,11 +79,11 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
                 html: `<p>Checkout this newly logged update <a href=${url}>${url} for ${matter.title}</a> </p>`,
               };
 
-              sgMail.sendMultiple(msg).then(() => {
-                console.log('emails sent successfully!');
-              }).catch(error => {
-                console.log(error);
-              });
+            //   sgMail.sendMultiple(msg).then(() => {
+            //     console.log('emails sent successfully!');
+            //   }).catch(error => {
+            //     console.log(error);
+            //   });
 
              return res.status(201).json({
                  status: 201,
