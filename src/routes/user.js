@@ -1,7 +1,7 @@
 import express from 'express';
 import { userValidator } from '../validations/user';
 import { verifyToken, verifyAdmin } from '../middleware/auth';
-import { userContoller } from '../controllers/user';
+import { userController } from '../controllers/user';
 import { getAllAdmins } from '../services/user';
 
 const { addUserValidator, loginUserValidator } = userValidator;
@@ -11,7 +11,7 @@ const { addUser,loginUser,
     resetPassword, receiveNewPassword, 
     adminGetAllUsers, updateUserProfile,
     adminDeleteUser
- } = userContoller;
+ } = userController;
 
 export const userRouter = express.Router();
 

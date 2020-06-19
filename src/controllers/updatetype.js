@@ -45,13 +45,15 @@ import { convertParamToNumber } from '../helpers/util';
              name: req.body.name,
              userId: req.authData.payload.id
          };
+
+         
          try {
              let updatetype = await model.UpdateType.create(updateTypeObj);
              return res.status(201).json({
                  status: 201,
                  updatetype
              });
-         }catch(error){
+         } catch(error){
              return res.status(500).json({
                  status: 500,
                  error: error.message
@@ -87,7 +89,6 @@ import { convertParamToNumber } from '../helpers/util';
 
         try {
             const updatetype =  await getUpdateTypeById(id);
-            console.log('here', updatetype);
             if(!updatetype){
                 return res.status(404).json({
                     status: 404,

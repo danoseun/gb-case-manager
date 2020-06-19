@@ -1,5 +1,6 @@
 import Validator from 'validatorjs';
 import model from '../database/models';
+import { Op } from 'sequelize';
 
 
 /**
@@ -24,14 +25,20 @@ export const updateTypeValidator = {
     name = name.trim();
 
     try {
-        const updatetype  = await model.UpdateType.findOne({ where: { name } });
+        const updatetype  = await model.UpdateType.findOne({ 
+            where: { 
+                name: {
+                    [Op.iLike]: `%${name}%`
+                }
+        } 
+    });
        
         if(updatetype === null || updatetype === undefined){
             req.body.name = name;
             return next();
         } else {
-            return res.status(400).json({
-                status: 400,
+            return res.status(409).json({
+                status: 409,
                 error: 'Seems like you have created an update type with similar name before'
             });
         }

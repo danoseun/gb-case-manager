@@ -61,6 +61,8 @@ import { convertParamToNumber } from '../helpers/util';
                     error: 'Event not found'
                 });
             }
+
+            event.name = req.body.name || event.name;
             event.employee_assigned = req.body.assignee || event.employee_assigned;
             return res.status(200).json({
                 status: 200,
@@ -80,8 +82,8 @@ import { convertParamToNumber } from '../helpers/util';
      async viewAllEvents(req, res){
         let { offset, limit, order, sort } = req.query;
 
-        offset = offset ? parseInt(offset) : 0;
-        limit = limit ? parseInt(limit) : 10;
+        offset = offset ? Number(offset) : 0;
+        limit = limit ? Number(limit) : 10;
 
         try {
             const data = await model.Event.findAndCountAll({

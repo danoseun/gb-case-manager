@@ -46,13 +46,14 @@ import { convertParamToNumber } from '../helpers/util';
              name: req.body.name,
              userId: req.authData.payload.id
          };
+
          try {
              let mattertype = await model.MatterType.create(matterTypeObj);
              return res.status(201).json({
                  status: 201,
                  mattertype
              });
-         }catch(error){
+         } catch(error){
              return res.status(500).json({
                  status: 500,
                  error: error.message
@@ -97,7 +98,6 @@ import { convertParamToNumber } from '../helpers/util';
 
             else {
                 const ifExists = await getMatterTypeByName(req.body.name.trim());
-                console.log('if', ifExists);
                 if(ifExists === null || ifExists === undefined) {
                     mattertype.name = req.body.name || mattertype.name;
                     await mattertype.save();

@@ -19,7 +19,7 @@ import cryptoRandomString from 'crypto-random-string';
 /**
  * User creation object
  */
-export const userContoller = {
+export const userController = {
     /**
      * This functionality allows admin to add 
      * users to the platform
@@ -87,8 +87,8 @@ export const userContoller = {
   
 
   /**
-   * This function verifies code sent to admin
-   * code expires after 20mins
+   * This function verifies code sent to admin.
+   * Code expires after 20mins
    */
   async adminVerification(req, res){
       const { code } = req.body;
