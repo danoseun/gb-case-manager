@@ -79,6 +79,7 @@ cloudinary.config({
                };
  
                sgMail.sendMultiple(msg).then(() => {
+                   console.log('email ni mi');
                  console.log('emails sent successfully!');
                }).catch(error => {
                  console.log(error);
