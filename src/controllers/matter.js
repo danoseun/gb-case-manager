@@ -26,6 +26,7 @@ cloudinary.config({
       * this functionality allows admin to create matter
       */
      async addMatter(req, res){
+         console.log('pray', req.authData.payload)
          const matterObj = {
              title: req.body.title,
              code: req.body.code,
@@ -44,7 +45,7 @@ cloudinary.config({
          };
          try {
              let matter = await model.Matter.create(matterObj);
-             const url = `https://ghalibchambers/matters/${matter.id}`
+             const url = `https://ghalib-case-manager.herokuapp.com/cases/${matter.id}`
 
              let admins = await getAllAdmins();
  

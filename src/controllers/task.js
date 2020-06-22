@@ -46,7 +46,7 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
             };
             
             let task = await model.Task.create(taskObj);
-            const url = `https://ghalibchambers/tasks/${task.id}`
+            const url = `https://ghalib-case-manager.herokuapp.com/tasks/${task.id}`
             let admins = await getAllAdmins();
 
             let emails = admins.map(admin => admin.email);
