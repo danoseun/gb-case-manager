@@ -57,16 +57,16 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
             
             const msg = {
                 to: emails,
-                from: 'Ghalib Chambers Notifications <oluwaseun@asb.ng>',
+                from: 'Ghalib Chambers Notifications <engineering@asb.ng>',
                 subject: '🍩 A new task has just been created. 🍩',
-                html: `<p>Checkout this newly created task <a href=${url}>${url}</a> </p>`,
+                html: `<p>Click the link to view this newly created task <a href=${url}>${url}</a> </p>`,
               };
 
-            //   sgMail.sendMultiple(msg).then(() => {
-            //     console.log('emails sent successfully!');
-            //   }).catch(error => {
-            //     console.log(error);
-            //   });
+              sgMail.sendMultiple(msg).then(() => {
+                console.log('emails sent successfully!');
+              }).catch(error => {
+                console.log(error);
+              });
 
              return res.status(201).json({
                  status: 201,

@@ -4,10 +4,10 @@ import model from '../database/models';
 import { Op } from 'sequelize';
 import { getMatter, createMatterResource } from '../services/matter';
 import { getClientById } from '../services/client';
-import { getUserById } from '../services/user';
+import { getUserById, getAllAdmins } from '../services/user';
 import { mergeUnique, convertParamToNumber, log } from '../helpers/util';
-//import cloudinary from '../helpers/cloudinary';
-//import { dataUri } from '../helpers/multer';
+import sgMail from '@sendgrid/mail'
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 import cloudinary from 'cloudinary';
 dotenv.config();
 
@@ -44,7 +44,7 @@ cloudinary.config({
          };
          try {
              let matter = await model.Matter.create(matterObj);
-             const url = `https://ghalibchambers/updates/${update.id}`
+             const url = `https://ghalibchambers/matters/${matter.id}`
 
              let admins = await getAllAdmins();
  
@@ -72,16 +72,16 @@ cloudinary.config({
              
              const msg = {
                  to: emails,
-                 from: 'Ghalib Chambers Notifications <oluwaseun@asb.ng>',
+                 from: 'Ghalib Chambers Notifications <engineering@asb.ng>',
                  subject: '🍩 A new matter has just been created. 🍩',
-                 html: `<p>A matter with title ${matter.title} has just been created <a href=${url}>${url}</a> </p>`,
+                 html: `<p>A matter with title ${matter.title} has just been created on Ghalib Chambers Platform. Click the link to view it <a href=${url}>${url}</a> </p>`,
                };
  
-            //    sgMail.sendMultiple(msg).then(() => {
-            //      console.log('emails sent successfully!');
-            //    }).catch(error => {
-            //      console.log(error);
-            //    });
+               sgMail.sendMultiple(msg).then(() => {
+                 console.log('emails sent successfully!');
+               }).catch(error => {
+                 console.log(error);
+               });
              return res.status(201).json({
                  status: 201,
                  matter
@@ -313,7 +313,6 @@ cloudinary.config({
                 })
             } else {
                 result.original_filename = file.name;
-                console.log('RES', result);
                 const resourceObj = {
                   userId:req.authData.payload.id,
                   matterId:matter.id,

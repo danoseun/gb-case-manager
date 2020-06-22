@@ -21,7 +21,7 @@ export const Transporter = async (msg, res) => {
  */
 export const emailTemplate = (email, code) => {
     const to = email;
-    const from = 'oluwaseun@asb.ng';
+    const from = 'Ghalib Chambers Notifications <engineering@asb.ng>'
     const subject = 'Login Verification Code';
     const html = `
     <p>Hey ${email}</p>
@@ -58,7 +58,7 @@ export const getPasswordResetURL = (req, token) => `https://ghalib-case-manager.
 
 export const passwordResetEmailTemplate = (user, url) => {
   const to = user.email;
-  const from = 'oluwaseun@asb.ng';
+  const from = 'engineering@asb.ng';
   const subject = 'Password Reset';
   const html = `
   <p>Hey ${user.fullname}</p>

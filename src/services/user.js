@@ -1,6 +1,5 @@
 import model from '../database/models'
 import sgMail from '@sendgrid/mail';
-//import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -29,7 +28,7 @@ export const Transporter = async (msg, res) => {
 
 export const registerEmailTemplate = (adminName, userObject, loginurl) => {
     const to = userObject.email;
-    const from = 'oluwaseun@asb.ng';
+    const from = 'Ghalib Chambers Notifications <engineering@asb.ng>'
     const subject = 'Invitation to Join Ghalib Chambers Platform';
     const html = `
     <p>${adminName} has invited you to join the Ghalib Chambers Case Management Portal.</p>
