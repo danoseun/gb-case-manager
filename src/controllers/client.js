@@ -4,6 +4,7 @@ import model from '../database/models';
  * Matter creation object
  */
 
+
  export const clientController = {
      /**
       * this functionality allows admin to create client
