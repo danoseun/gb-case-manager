@@ -241,20 +241,24 @@ cloudinary.config({
       
       try {
       const matter = await getMatter(id);
-      
+      console.log('MATTER', matter);
+
       matter.title = req.body.title || matter.title;
       matter.code = req.body.code || matter.code;
-      matter.client = req.body.client ? mergeUnique(matter.client, req.body.client) : matter.client;
+      matter.client = req.body.client ? req.body.client : matter.client;
       matter.start_date = req.body.start_date || matter.start_date;
       matter.end_date = req.body.end_date || matter.end_date;
       matter.description = req.body.description || matter.description;
       matter.matter_type = req.body.mattertype || matter.matter_type;
-      matter.assignees = req.body.assignees ? mergeUnique(matter.assignees, req.body.assignees) : matter.assignees; 
+      matter.assignees = req.body.assignees ? mergeUnique(matter.assignees, req.body.assignees) : matter.assignees;
+      console.log('ASS', matter.assignees); 
       matter.location = req.body.location || matter.location;
       matter.status = req.body.status || matter.status;
       matter.parties = req.body.party || matter.parties;
       
       const newmatter = await matter.save()
+
+      console.log('NEWMATTER', newmatter)
       return res.status(200).json({
           status: 200,
           newmatter

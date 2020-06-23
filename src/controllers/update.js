@@ -76,7 +76,7 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
                 to: emails,
                 from: 'Ghalib Chambers Notifications <engineering@asb.ng>',
                 subject: '🍩 A new update has just been logged on a matter. 🍩',
-                html: `<p>Click the link to view this newly created update <a href=${url}>${url} for ${matter.title}</a> </p>`,
+                html: `<p>Click the link to view this newly created update <a href=${url}>${url}</a> </p>`,
               };
 
               sgMail.sendMultiple(msg).then(() => {
