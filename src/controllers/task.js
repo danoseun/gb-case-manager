@@ -4,9 +4,9 @@ import model from '../database/models';
 import { getMatter } from '../services/matter';
 import { getUpdateById } from '../services/update';
 import { getTaskById } from '../services/task';
-import { convertParamToNumber } from '../helpers/util';
+import { convertParamToNumber, log } from '../helpers/util';
 import { Op } from 'sequelize';
-import { getUserById, getAllAdmins } from '../services/user';
+import { getUserById } from '../services/user';
 import sgMail from '@sendgrid/mail'
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
@@ -21,6 +21,7 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
       * staff and admin create tasks
       */
      async addTask(req, res){
+         // console.log('REQ', req.authData.payload)
          let { matterId } = req.params;
          matterId = convertParamToNumber(matterId);
          try {
@@ -47,26 +48,33 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
             
             let task = await model.Task.create(taskObj);
             const url = `https://ghalib-case-manager.herokuapp.com/tasks/${task.id}`
-            let admins = await getAllAdmins();
+            
 
-            let emails = admins.map(admin => admin.email);
+            /** 
+             * send email only when someone else assigns task 
+             * if user assigns tasks to himself/herself no email
+             * will be sent
+            */
+            if(req.authData.payload.id !== task.assignee) {
+                let assigned = await getUserById(task.assignee);
+            
+                const assigneeEmail = assigned.email;
+            
+               const msg = {
+                    to: assigneeEmail,
+                    from: 'Ghalib Chambers Notifications <engineering@asb.ng>',
+                    subject: '🍩 A new task has just been created. 🍩',
+                    html: `<p>Click the link to view this new task assigned to you. <a href=${url}>${url}</a> </p>`,
+                 };
+
+                 sgMail.send(msg).then(() => {
+                    log('email sent successfully!');
+                }).catch(error => {
+                   log(error);
+               });
+             }
         
-            let assigned = await getUserById(task.assignee);
             
-            emails.push(assigned.email);
-            
-            const msg = {
-                to: emails,
-                from: 'Ghalib Chambers Notifications <engineering@asb.ng>',
-                subject: '🍩 A new task has just been created. 🍩',
-                html: `<p>Click the link to view this newly created task <a href=${url}>${url}</a> </p>`,
-              };
-
-              sgMail.sendMultiple(msg).then(() => {
-                console.log('emails sent successfully!');
-              }).catch(error => {
-                console.log(error);
-              });
 
              return res.status(201).json({
                  status: 201,

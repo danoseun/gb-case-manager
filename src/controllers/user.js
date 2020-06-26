@@ -87,7 +87,8 @@ export const userController = {
   
 
   /**
-   * This function verifies code sent to admin.
+   * This function verifies code sent to admin
+   * and creates token afterwards
    * Code expires after 20mins
    */
   async adminVerification(req, res){

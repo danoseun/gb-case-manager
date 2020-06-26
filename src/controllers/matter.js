@@ -1,15 +1,16 @@
 import dotenv from 'dotenv';
+dotenv.config();
 //import fs from 'fs';
 import model from '../database/models';
 import { Op } from 'sequelize';
 import { getMatter, createMatterResource } from '../services/matter';
 import { getClientById } from '../services/client';
-import { getUserById, getAllAdmins } from '../services/user';
-import { mergeUnique, convertParamToNumber, log } from '../helpers/util';
+import { getUserById } from '../services/user';
+import { mergeUnique, convertParamToNumber, arrayDifference, removeIntegerFromArray, log } from '../helpers/util';
 import sgMail from '@sendgrid/mail'
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 import cloudinary from 'cloudinary';
-dotenv.config();
+
 
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -46,43 +47,38 @@ cloudinary.config({
          try {
              let matter = await model.Matter.create(matterObj);
              const url = `https://ghalib-case-manager.herokuapp.com/cases/${matter.id}`
-
-             let admins = await getAllAdmins();
- 
-             // fetch only emails of the admins
-             let adminEmails = admins.map(admin => admin.email);
  
              //convert IDs to numbers if they are not numbers
              let newArr = matter.assignees.map(id => Number(id));
+
+             // if logged in user ID is in the list of assignees, filter out the ID
+             newArr = newArr.includes(req.authData.payload.id) ? removeIntegerFromArray(newArr, req.authData.payload.id) : newArr;
              
              //get the details of each assignee
              let newAssignees;
              newAssignees = await Promise.all(newArr.map(id => getUserById(id)));
  
              // filter out instances of null(null occurs when a user has been deleted from the db)
-             let filteredAssignees = newAssignees.filter(function (el) {
-                 return el !== null;
-               });
+             let filteredAssignees = newAssignees.filter(el => el !== null);
                
              // get a pure array of user objects  
              filteredAssignees.map(el => el.get({ raw: true }));
             
              // get emails of assignees
              let assigneeEmails = filteredAssignees.map(assignee => assignee.email);
-             const emails = mergeUnique(adminEmails, assigneeEmails);
+             
              
              const msg = {
-                 to: emails,
+                 to: assigneeEmails,
                  from: 'Ghalib Chambers Notifications <engineering@asb.ng>',
                  subject: '🍩 A new matter has just been created. 🍩',
-                 html: `<p>A matter with title ${matter.title} has just been created on Ghalib Chambers Platform. Click the link to view it <a href=${url}>${url}</a> </p>`,
+                 html: `<p>A matter has just been assigned to you on Ghalib Chambers Platform. Click the link to view it <a href=${url}>${url}</a> </p>`,
                };
  
                sgMail.sendMultiple(msg).then(() => {
-                   console.log('email ni mi');
-                 console.log('emails sent successfully!');
+                 log('emails sent successfully!');
                }).catch(error => {
-                 console.log(error);
+                 log(error);
                });
              return res.status(201).json({
                  status: 201,
@@ -241,7 +237,7 @@ cloudinary.config({
       
       try {
       const matter = await getMatter(id);
-      console.log('MATTER', matter);
+      const oldAssignees = matter.assignees
 
       matter.title = req.body.title || matter.title;
       matter.code = req.body.code || matter.code;
@@ -251,14 +247,43 @@ cloudinary.config({
       matter.description = req.body.description || matter.description;
       matter.matter_type = req.body.mattertype || matter.matter_type;
       matter.assignees = req.body.assignees ? mergeUnique(matter.assignees, req.body.assignees) : matter.assignees;
-      console.log('ASS', matter.assignees); 
       matter.location = req.body.location || matter.location;
       matter.status = req.body.status || matter.status;
       matter.parties = req.body.party || matter.parties;
       
       const newmatter = await matter.save()
+      const url = `https://ghalib-case-manager.herokuapp.com/cases/${matter.id}`
 
-      console.log('NEWMATTER', newmatter)
+      // while updating a matter if assigness were also updated
+      if(req.body.assignees) {
+          const result = arrayDifference(matter.assignees, oldAssignees);
+          let newAssignees = result.map(id => Number(id));
+          newAssignees = await Promise.all(newAssignees.map(id => getUserById(id)));
+
+          // filter out instances of null(null occurs when a user has been deleted from the db)
+          let filteredAssignees = newAssignees.filter(function (el) {
+            return el !== null;
+          });
+          
+        // get a pure array of user objects  
+        filteredAssignees.map(el => el.get({ raw: true }));
+       
+        // get emails of assignees
+        let assigneeEmails = filteredAssignees.map(assignee => assignee.email);
+        const msg = {
+            to: assigneeEmails,
+            from: 'Ghalib Chambers Notifications <engineering@asb.ng>',
+            subject: '🍩 A matter has just been assigned to you 🍩',
+            html: `<p>A matter has just been assigned to you on Ghalib Chambers Platform. Click the link to view it <a href=${url}>${url}</a> </p>`,
+          };
+
+          sgMail.sendMultiple(msg).then(() => {
+            console.log('emails sent successfully!');
+          }).catch(error => {
+            console.log(error);
+          });
+      }
+
       return res.status(200).json({
           status: 200,
           newmatter

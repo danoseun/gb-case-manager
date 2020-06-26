@@ -134,7 +134,7 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
     },
 
     async addCommentToUpdate(req, res){
-
+        
         try{
             let { updateId } = req.params;
             updateId = convertParamToNumber(updateId);

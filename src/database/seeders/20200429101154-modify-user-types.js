@@ -46,13 +46,25 @@ module.exports = {
         firstname: 'Quincy',
         lastname: 'Apache',
         fullname: 'Quincy Apache',
-        email: 'hiemail19@gmail.com',
+        email: 'quincyapache@yahoo.com',
         password: hash,
         role: 'staff',
         branch: 'Lagos',
         createdAt: new Date(),
         updatedAt: new Date(),
-      }
+      },
+      {
+        firstname: 'Seun',
+        lastname: 'Dans',
+        fullname: 'Seun Dans Test',
+        email: 'hid19@gmail.com',
+        password: hash,
+        role: 'staff',
+        branch: 'Lagos',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+ 
     ],
 
     {},
