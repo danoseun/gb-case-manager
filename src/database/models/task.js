@@ -10,6 +10,7 @@ module.exports = (sequelize, DataTypes) => {
     assignee: {
       type: DataTypes.INTEGER
     },
+    assignee_name: DataTypes.STRING,
     status:{
       type: DataTypes.ENUM,
       values: ['to-do','in-progress', 'completed']

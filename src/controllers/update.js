@@ -113,7 +113,7 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
                 matterId = matter.id;
                 let [attached_resources] = await getAllMatterResources(matterId);
                 let updates = await getMatterUpdates(matterId);
-                //console.log('updates', updates);
+        
                 return res.status(200).json({
                     status: 200,
                     updates,
@@ -135,7 +135,7 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
     async addCommentToUpdate(req, res){
         
-        try{
+        try {
             let { updateId } = req.params;
             updateId = convertParamToNumber(updateId);
             let update = await getUpdateById(updateId);
@@ -259,6 +259,39 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
          });
      }
   },
+
+  /**
+   * fetch all updates user has logged
+   * frontend will display this on the homepage of 
+   * each logged in user
+   */
+  async getUserUpdates(req, res) {
+    let { offset, limit, order, sort } = req.query;
+    offset = offset ? Number(offset) : 0;
+    limit = limit ? Number(limit) : 10;
+
+    try {
+        const data = await model.Update.findAndCountAll({
+            where: {
+                userId: req.authData.payload.id
+              },
+              order: [[sort || "updatedAt", order || "DESC"]],
+              offset,
+              limit
+        });
+        return res.status(200).json({
+            data: data.rows.length > 0 ? data.rows : 'You have no updates at the moment', 
+            offset, 
+            limit, 
+            total: data.count
+        })
+    } catch(error) {
+        return res.status(500).json({
+            status: 500,
+            error: error.message
+        });
+    }
+  }
 }
 
 

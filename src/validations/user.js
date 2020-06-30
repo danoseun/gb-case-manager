@@ -1,5 +1,4 @@
 import Validator from 'validatorjs';
-//import db from '../database/models';
 import { findUserByEmail } from '../services/user'
 import { comparePassword, generatePassword } from '../helpers/password';
 

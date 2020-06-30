@@ -22,6 +22,9 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false
       },
+      assignee_name: {
+        type: Sequelize.STRING
+      },
       status:{
         type: Sequelize.ENUM,
         values: ['to-do','in-progress', 'completed']

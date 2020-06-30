@@ -47,20 +47,26 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
             };
             
             let task = await model.Task.create(taskObj);
+
+            // fetch details of the assignee
+            let assigned = await getUserById(task.assignee);
+            // get the fullname of the user task was assigned to
+            task.assignee_name = assigned.fullname;
+
+
             const url = `https://ghalib-case-manager.herokuapp.com/tasks/${task.id}`
             
 
             /** 
-             * send email only when someone else assigns task 
+             * send email only when someone else assigns task. 
              * if user assigns tasks to himself/herself no email
              * will be sent
             */
             if(req.authData.payload.id !== task.assignee) {
-                let assigned = await getUserById(task.assignee);
             
                 const assigneeEmail = assigned.email;
             
-               const msg = {
+                const msg = {
                     to: assigneeEmail,
                     from: 'Ghalib Chambers Notifications <engineering@asb.ng>',
                     subject: '🍩 A new task has just been created. 🍩',

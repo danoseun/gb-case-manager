@@ -10,7 +10,7 @@ const { addUser,loginUser,
     loginAdmin, adminVerification, 
     resetPassword, receiveNewPassword, 
     adminGetAllUsers, updateUserProfile,
-    adminDeleteUser
+    adminDeleteUser, changePasswordProfile
  } = userController;
 
 export const userRouter = express.Router();
@@ -26,3 +26,4 @@ userRouter.post('/register', verifyToken, verifyAdmin, addUserValidator, addUser
 userRouter.get('/users', verifyToken, verifyAdmin, adminGetAllUsers);
 userRouter.put('/users/:id', verifyToken, updateUserProfile);
 userRouter.delete('/users/:id', verifyToken, verifyAdmin, adminDeleteUser);
+userRouter.put('/updatepassword', verifyToken, changePasswordProfile);

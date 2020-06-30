@@ -56,7 +56,7 @@ export const userController = {
   
 /**
   * This function allows all types of users 
-  * to login the platform
+  * to login on the platform
 */
   async loginUser(req, res){
       const { role, email } = req.body
@@ -272,7 +272,7 @@ async adminGetAllUsers(req, res) {
     let id = convertParamToNumber(req.params.id);
       try {
           const user = await getUserById(id)
-          // admins can edit user profile while the staff can edit their own profile
+          // admins can edit all users' profile while the staff can edit their own profile
           if(req.authData.payload.role === 'admin' || (req.authData.payload.id === user.id)) {
             if(!user){
                 return res.status(404).json({
@@ -335,6 +335,62 @@ async adminGetAllUsers(req, res) {
               err: error.message
           });
       }
+  },
+
+  /**
+   * Change password available on profile settings 
+   */  
+  async changePasswordProfile(req, res){
+
+    //console.log('HERE', req.authData.payload);
+     let { password, newPassword, confirmNewPassword } = req.body;
+
+     try {
+        const user = await getUser(req.authData.payload.email);
+        let compare = comparePassword(password, user.password);
+        if(!compare) {
+            return res.status(400).json({
+                status: 400,
+                error: 'Ensure that you are entering your old password'
+            })
+        }
+
+        if(password.trim() === newPassword.trim()){
+            return res.status(400).json({
+                status: 400,
+                error: 'Your old and new password can not be the same'
+            });
+        }
+
+        if(newPassword.trim() !== confirmNewPassword.trim() || newPassword.trim() === ''){
+            return res.status(400).json({
+                status: 400,
+                error: 'Ensure the new password fields match and that they are not empty'
+            })
+        }
+
+        if(!checkPassword(newPassword)) {
+            return res.status(400).json({
+                status: 400,
+                message: 'Ensure that the new password has 8 characters and contains a number at least'
+            });
+        }
+
+        let hash = hashPassword(newPassword);
+        await updatePassword(password,hash, req.authData.payload.email);
+                
+        return res.status(202).json({
+            status: 202,
+            message: 'Password updated successfully on profile settings'
+        });
+
+     } catch(error){
+         return res.status(500).json({
+             status: 500,
+             error: error.message
+         });
+     }
+     
   }
 }
 

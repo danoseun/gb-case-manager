@@ -11,7 +11,7 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
  *@param {String} email - the user's email
  *@return {Promise} - response of sequelize
  */
-export const findUserByEmail = (email) =>  model.User.findOne({ where: { email } });
+export const findUserByEmail = async(email) => await model.User.findOne({ where: { email } });
 
 
 
@@ -72,7 +72,7 @@ export const updatePassword = async (password,hash, email) => {
    */
   export const getUser = async (email) => {
     try {
-        const User = model.User.findOne({ where: { email } });
+        const User = await model.User.findOne({ where: { email } });
         return User;
       } catch (error) {
         throw error;
