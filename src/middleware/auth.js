@@ -51,7 +51,6 @@ export const verifyToken = (req, res, next) => {
 export const verifyAdmin = (req, res, next) => {
   const { role } = req.authData.payload;
   if (role === 'admin') {
-    //console.log('HERE', req.authData.payload.role);
     req.body.adminfullname = req.authData.payload.fullname;
     return next();
   }

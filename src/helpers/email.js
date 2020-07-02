@@ -15,7 +15,7 @@ export const Transporter = async (msg, res) => {
   }
 };
 
-/**This email temaplate
+/** This email temaplate
  * is specifically for two-factor authentication
  * for admins
  */
@@ -47,7 +47,7 @@ export const useUserDetailToMakeToken = (user) => {
 };
 
 
-//`${req.protocol}://${req.headers.host}/password/reset/${token}`;
+
 export const getPasswordResetURL = (req, token) => `https://ghalib-case-manager.herokuapp.com/password/reset/${token}`;
 
 /**

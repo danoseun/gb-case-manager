@@ -20,7 +20,7 @@ export const convertParamToNumber = id => Number(id);
  * Assymetric in the sense that it compares the arrays
  * and returns element(s) in arr1 not present arr2.
  * order of arrays is important
- * [1,2,3], [1,2]
+ * [1,2,3], [1,2] !== [1,2], [1,2,3]
  * https://i.stack.imgur.com/mEtro.png
  */
 export const arrayDifference = (arr1, arr2) => {

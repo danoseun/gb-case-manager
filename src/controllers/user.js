@@ -40,7 +40,7 @@ export const userController = {
 
     const adminName = req.body.adminfullname;
 
-    //const loginurl = `${req.protocol}://${req.headers.host}/login`;
+    
     const loginurl = `https://ghalib-case-manager.herokuapp.com/login`;
     
     const emailSent = registerEmailTemplate(adminName, userObject, loginurl);
@@ -342,7 +342,6 @@ async adminGetAllUsers(req, res) {
    */  
   async changePasswordProfile(req, res){
 
-    //console.log('HERE', req.authData.payload);
      let { password, newPassword, confirmNewPassword } = req.body;
 
      try {

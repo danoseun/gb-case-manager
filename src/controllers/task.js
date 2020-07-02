@@ -21,7 +21,6 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
       * staff and admin create tasks
       */
      async addTask(req, res){
-         // console.log('REQ', req.authData.payload)
          let { matterId } = req.params;
          matterId = convertParamToNumber(matterId);
          try {
@@ -361,19 +360,17 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
     async taskReminder(){
         var now = new Date();
         now.setDate(now.getDate()+1);
-        //console.log('D', now);
+    
         const dueTasks = await model.Task.findAll({
             where: {
                 [Op.and]: sequelize.where(sequelize.fn('date', sequelize.col('due_date')), '=', now),
                 [Op.or]: [{status: 'to-do'}, {status: 'in-progress'}]
             }
         }).map(el => el.get({ raw: true }));
-        //console.log('HERE', dueTasks);
+        
         if(dueTasks.length > 0){
             let values = dueTasks.map(({task_detail, assignee}) => ({task_detail, assignee}));
-            //console.log('values', values);
             let assignees = await Promise.all(values.map(value => getUserById(value.assignee)));
-            //console.log('users', assignees);
 
             // filter out instances of null(null occurs when a user has been deleted from the db)
             let filteredAssignees = assignees.filter(function (el) {
@@ -381,7 +378,7 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
               });
            // get a pure array of user objects
             filteredAssignees.map(el => el.get({ raw: true }));
-            //console.log('filt', filteredAssignees);
+            
             // return list of user emails
             let emails = filteredAssignees.map(user => user.email);
             console.log('emails', emails);

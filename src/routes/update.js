@@ -14,8 +14,6 @@ export const updateRouter = express.Router();
 
 
 
-
-
 updateRouter.post('/matters/:matterId/updates', verifyToken, addUpdateValidator, addUpdate);
 updateRouter.get('/matters/:matterId/updates', verifyToken, getMatterUpdates)
 updateRouter.post('/updates/:updateId/comments', verifyToken, addCommentToUpdate);

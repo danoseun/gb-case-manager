@@ -97,7 +97,6 @@ import { convertParamToNumber } from '../helpers/util';
             }
             else {
                 const ifExists = await getUpdateTypeByName(req.body.name);
-                console.log('UP', ifExists);
                 if(ifExists === null || ifExists === undefined) {
                     updatetype.name = req.body.name || updatetype.name;
                     await updatetype.save();

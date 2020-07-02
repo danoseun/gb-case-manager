@@ -1,6 +1,5 @@
 import dotenv from 'dotenv';
 dotenv.config();
-//import fs from 'fs';
 import model from '../database/models';
 import { Op } from 'sequelize';
 import { getMatter, createMatterResource } from '../services/matter';
@@ -27,7 +26,6 @@ cloudinary.config({
       * this functionality allows admin to create matter
       */
      async addMatter(req, res){
-         console.log('pray', req.authData.payload)
          const matterObj = {
              title: req.body.title,
              code: req.body.code,
@@ -445,7 +443,6 @@ cloudinary.config({
                 id
         }
               })
-              console.log('RESOURCE', resource);
               return res.status(200).json({
                   status: 200,
                   resource,
