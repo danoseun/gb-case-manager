@@ -22,5 +22,5 @@ updateRouter.post('/updates/:updateId/comments', verifyToken, addCommentToUpdate
 updateRouter.put('/updates/:updateId', verifyToken, editUpdate);
 updateRouter.get('/updates/:updateId/comments', verifyToken, getUpdatePlusAssociatedComments);
 updateRouter.delete('/updates/:updateId', verifyToken, verifyAdmin, deleteUpdate);
-updateRouter.get('/userupdates', verifyToken, getUserUpdates)
+updateRouter.get('/userupdates', verifyToken, getUserUpdates);
 
