@@ -239,6 +239,7 @@ async adminGetAllUsers(req, res) {
     try {
         const data = await model.User.findAndCountAll({
             where: options,
+            attributes: { exclude: ['password'] },
             order: [[sort || "updatedAt", order || "DESC"]],
             offset,
             limit
