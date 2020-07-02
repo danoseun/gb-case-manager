@@ -14,7 +14,7 @@ The objective of this project is to create a Case Management Application to be a
 - [Outstandings](#outstandings)
 
 ## Documentation
-The API documentation is available [here](https://whatsappsolution.docs.apiary.io/).
+The API documentation is available [here](https://documenter.getpostman.com/view/2851236/SzfAym6N).
 
 ### System Requirements
 Your system will need to have the following software installed:
