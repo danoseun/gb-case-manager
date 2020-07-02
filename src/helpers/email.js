@@ -74,10 +74,6 @@ export const passwordResetEmailTemplate = (user, url) => {
   
 
 
-//export const getPasswordResetURL = (token) => `http://localhost:1600/password/reset/${token}`;
-  
-
-
 
 
 

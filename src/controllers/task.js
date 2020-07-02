@@ -358,7 +358,7 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
      * that reminders need to be sent for
      */
     async taskReminder(){
-        var now = new Date();
+        let now = new Date();
         now.setDate(now.getDate()+1);
     
         const dueTasks = await model.Task.findAll({
@@ -381,7 +381,6 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
             
             // return list of user emails
             let emails = filteredAssignees.map(user => user.email);
-            console.log('emails', emails);
 
             const msg = {
                 to: emails,
