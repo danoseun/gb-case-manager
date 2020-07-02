@@ -56,10 +56,10 @@ npm run seed
 Currently, there are no tests for this project.
 
 ## Outstandings
-* The function that sends email reminders for tasks due need to  include a link to the task due but currently it does not. The email only says the task is due but does not which tasks it is.
+* The email reminder for tasks due need to include a link to the task for reference but currently it does not. The email only says the task is due but does not specify which task it is.
 
-* There was a talk about putting resources inside folders. That maybe looked into.
+* There was a talk about organising resources inside folders. That maybe looked into.
 
 * When updates are made, resources also need to be attached with it. Currently, resources can't be attached with updates.
 
-* Admin would also like to get upadates of weekly activities.
+* Admin(s) would also like to get upadates of weekly activities.
