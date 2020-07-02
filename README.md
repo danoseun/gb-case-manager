@@ -62,4 +62,4 @@ Currently, there are no tests for this project.
 
 * When updates are made, resources also need to be attached with it. Currently, resources can't be attached with updates.
 
-* Admin(s) would also like to get upadates of weekly activities.
+* Admin(s) would also like to get updates of weekly activities.
